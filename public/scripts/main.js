@@ -1,27 +1,35 @@
 // data setup
 var dataSet = [];
 var columnsF = [
-  { title: "Title", data: "title" },
+  { title: "Title" },
   { title: "Category", data: "category" },
   { title: "Tags", data: "tags" },
-  { title: "Edit" }
+  { title: "Author", data: "author" },
+  { title: "Edit" },
 ];
 var columnRenderF = [
   {
+    render: function (data, type, full, meta) {
+      return `<a href="/recipe.html?id=${full._id}">${full.title}</a>`;
+    },
     width: "25%",
-    targets: 0
+    targets: 0,
   },
   {
     width: "50px",
-    targets: 1
+    targets: 1,
+  },
+  {
+    width: "100px",
+    targets: 3,
   },
   {
     render: function (data, type, full, meta) {
-      return '<a class="edit icon" data="' + meta.row + '"">&#128395;</span>';
+      return '<a class="edit icon" data="' + meta.row + '"">&#128221;</a>';
     },
     width: "30px",
-    targets: 3
-  }
+    targets: 4,
+  },
 ];
 
 // DataTables functions
@@ -38,17 +46,17 @@ function init() {
     $("#mytable").DataTable({
       language: {
         emptyTable:
-          "<p style='margin:10px'>This is the beginning of your log.</p><p id='first'>Add your first entry to get started!</p>"
+          "<p style='margin:10px'>This is the beginning of your log.</p><p id='first'>Add your first entry to get started!</p>",
       },
       order: [[0, "desc"]],
       pageLength: 30,
       lengthMenu: [
         [10, 30, 50, -1],
-        [10, 30, 50, "All"]
+        [10, 30, 50, "All"],
       ],
       data: dataSet,
       columns: columnsF,
-      columnDefs: columnRenderF
+      columnDefs: columnRenderF,
     });
   } catch (error) {
     console.error("An error occurred during DataTable initialization:", error);
@@ -93,10 +101,7 @@ async function getData() {
   }
 }
 
-//run
 $(document).ready(function () {
-  getData();
-
   //click functions
   $("#newb").click(function () {
     clear();
@@ -136,4 +141,7 @@ $(document).ready(function () {
     // TODO: update dataSet with edited row
     $(".hideme").fadeOut();
   });
+
+  // fetch data
+  getData();
 });

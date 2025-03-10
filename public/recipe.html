@@ -1,0 +1,415 @@
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="title" content="Recipe Log - Shalom R" />
+    <meta
+      name="description"
+      content="Save your favorite online recipe, WITH your personalized custom edits. Format recipes for printing, without the lengthy history behind it. Save recipes to your computer for offline viewing." />
+    <meta
+      name="keywords"
+      content="Recipe Maker, Recipe Printer, Download Recipe, Recipe Cleaner, Format Recipe, Recipe Formatter, Print Your Own Recipe, Recipe Editor" />
+    <meta name="author" content="Shalom Rasmussen" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/modern.css" />
+    <style>
+      /* v2.0 */
+      html {
+        padding-top: 30px;
+      }
+      .fstandard {
+        font-family: "Raleway", sans-serif;
+      }
+      .fdancing {
+        font-family: "Dancing Script", cursive;
+      }
+      body {
+        font-family: "Martel Sans", sans-serif;
+      }
+      .mtitle {
+        text-transform: uppercase;
+        color: var(--primary-dark);
+        font-size: smaller;
+        font-family: "Poppins", sans-serif;
+        font-weight: 500;
+      }
+      .text p {
+        margin-bottom: 15px;
+      }
+      #items .mtitle {
+        margin-bottom: 10px;
+      }
+      #items .text p {
+        margin-bottom: 5px;
+      }
+      button.primary {
+        background: var(--primary-color);
+        color: white;
+      }
+      hr {
+        margin: 2.5rem 0;
+        border-color: var(--primary-dark);
+      }
+      #instructions {
+        list-style-type: none;
+        counter-reset: item;
+        margin-bottom: 3rem;
+      }
+      li {
+        margin-bottom: 2rem;
+        padding-left: 50px;
+        position: relative;
+        font-family: "Poppins", sans-serif;
+      }
+      #instructions li:before {
+        counter-increment: item;
+        content: counter(item);
+        padding: 3px 10px 1px 10px;
+        font-size: large;
+        font-weight: 700;
+        border-radius: 50%;
+        border: 1px solid var(--primary-color);
+        color: var(--primary-color);
+        position: absolute;
+        top: calc(50% - 18px);
+        left: 0px;
+        line-height: 25px;
+      }
+      #instructions li:after {
+        content: " ";
+        display: block;
+        clear: both;
+      }
+      textarea {
+        min-height: 10px;
+        font-family: "Poppins", sans-serif;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+      textarea:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px var(--primary-light);
+      }
+      .seven textarea {
+        width: 100%;
+      }
+      .field {
+        display: none;
+        height: 100px;
+      }
+      .text,
+      .edit {
+        padding: 5px 10px;
+      }
+      .text:hover,
+      .edit:hover {
+        position: relative;
+        border-radius: 8px;
+        background: var(--primary-light);
+      }
+      .text:hover::before,
+      .edit:hover::before {
+        content: "✏️";
+        position: absolute;
+        left: -35px;
+      }
+      .edit.wide:hover::before {
+        left: -80px;
+      }
+      .edit.wider:hover::before {
+        left: -100px;
+      }
+      .modify {
+        font-size: small;
+        margin-left: 30px;
+        color: var(--primary-color);
+        cursor: pointer;
+        font-family: "Poppins", sans-serif;
+        transition: color 0.3s ease;
+      }
+      .modify:hover {
+        color: var(--hover-color);
+      }
+      #credits {
+        color: #999;
+        text-align: right;
+        font-size: 50%;
+        font-family: "Poppins", sans-serif;
+        word-break: break-word;
+      }
+      #credit {
+        font-size: small;
+        color: var(--primary-dark);
+        margin-top: 40px;
+        float: right;
+        font-family: "Poppins", sans-serif;
+      }
+      #credit span.edit {
+        margin-right: 50px;
+      }
+      button {
+        transition: all 0.3s ease;
+      }
+      button:hover {
+        filter: brightness(1.1);
+        border-color: white;
+      }
+      .container.wiggle {
+        animation: wiggle 0.5s ease-in-out 1;
+      }
+      @keyframes wiggle {
+        0% {
+          rotate: 0deg;
+          translate: 0 0;
+          scale: 0.9;
+        }
+        50% {
+          rotate: 2deg;
+          translate: 10px 0;
+          scale: 1;
+        }
+      }
+
+      /* Modern overrides */
+      body {
+        background-color: #c2c2c2;
+        background-color: #fafafa;
+      }
+      .container {
+        background: white;
+        border-radius: 12px;
+        padding: 2.5rem;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+        margin-top: 2rem;
+      }
+      h3.fdancing {
+        color: var(--primary-color);
+        font-size: 3rem;
+        display: inline;
+      }
+      button {
+        border-radius: 6px;
+        border: 1px solid;
+        font-weight: 500;
+      }
+      .secondary,
+      .secondary:hover {
+        color: var(--primary-dark);
+        border: 1px solid var(--primary-color);
+      }
+      input[type="text"] {
+        font-family: "Poppins", sans-serif;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+      }
+      input[type="text"]:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 2px var(--primary-light);
+      }
+
+      /* Print overrides */
+      @media print {
+        body {
+          font-size: 110%;
+        }
+        .container {
+          margin-top: 0;
+          max-width: 100%;
+          width: 90%;
+        }
+        hr {
+          margin: 2rem;
+        }
+        h3.fdancing {
+          font-size: 2.5rem;
+          margin-left: 25px;
+        }
+        .text,
+        .edit {
+          padding: 0;
+        }
+        #actions,
+        .modify {
+          display: none;
+        }
+        #credit {
+          position: fixed;
+          bottom: 30px;
+        }
+        #credits {
+          font-size: 0.7rem;
+        }
+        .mtitle {
+          color: var(--primary-dark);
+        }
+        #instructions li:before {
+          border-color: var(--primary-color);
+          line-height: 22px;
+          font-size: small;
+        }
+        .mtitle,
+        #credits,
+        #instructions li:before {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+      }
+      @media not print {
+        #credits {
+          font-size: small;
+          text-align: left;
+        }
+      }
+    </style>
+  </head>
+  <body class="theme-orange">
+    <div class="container wiggle">
+      <div class="row">
+        <span id="actions" style="float: right">
+          <button id="save" class="primary" onclick="presave();">Save</button>
+          <span id="dload" style="display: none">
+            <input type="text" id="dname" placeholder="File Name" />
+            <button class="primary" onclick="saveme($('#dname').val())">Download</button>
+          </span>
+          <button id="print" class="secondary" onclick="window.print();return false;">Print</button>
+        </span>
+        <h3 class="fdancing edit">Recipe Title</h3>
+        <hr />
+      </div>
+      <div class="row" style="text-align: center">
+        <div class="three columns">
+          <span class="mtitle">Prep</span>
+          <span id="prep" class="edit wide">40 mins</span>
+        </div>
+        <div class="three columns">
+          <span class="mtitle edit">Bake</span>
+          <span id="bake" class="edit wide">1 hr</span>
+        </div>
+        <div class="three columns">
+          <span class="mtitle">Total</span>
+          <span id="total" class="edit wide">1 hr 40 mins</span>
+        </div>
+        <div class="three columns">
+          <span class="mtitle">Yield</span>
+          <span id="yield" class="edit wide">1 Pie</span>
+        </div>
+      </div>
+      <hr />
+      <div class="row" style="margin: 0 25px; margin-top: 40px">
+        <div id="items" class="five columns">
+          <h5>
+            Ingredients
+            <span class="modify" onclick="addSection()">+ add section</span>
+          </h5>
+          <p class="mtitle edit">Wet</p>
+          <div class="set">
+            <div class="text">1/2 cup milk<br />2 tsp vanilla extract</div>
+            <textarea class="field">1/2 cup milk &#013;2 tsp vanilla extract</textarea>
+          </div>
+          <p class="mtitle edit" style="margin-top: 25px">Dry</p>
+          <div class="set">
+            <div class="text">2 cups almond flour</div>
+            <textarea class="field">2 cups almond flour</textarea>
+          </div>
+        </div>
+        <div class="seven columns">
+          <h5>
+            Instructions
+            <span id="noteb" class="modify" onclick="addNote()">+ add note</span>
+          </h5>
+          <div class="set">
+            <ol class="text" id="instructions">
+              <li>Preheat oven to 350&#176;</li>
+              <li>Mix ingredients</li>
+              <li>Bake for 30 mins</li>
+            </ol>
+            <textarea class="field">Preheat oven to 350&#176; &#013;Mix ingredients &#013;Bake for 30 mins</textarea>
+          </div>
+          <div id="note" class="set" style="display: none">
+            <p class="text">NOTE: Important info here...</p>
+            <textarea class="field">NOTE: </textarea>
+          </div>
+          <div class="set">
+            <div class="text" id="credits">Credits - https://www.kingarthurflour.com/recipes/banana-bread-recipe</div>
+            <textarea class="field">Credits - </textarea>
+          </div>
+        </div>
+      </div>
+      <div id="credit">recipe by | <span class="edit wider">Shalom R</span> created at | shalomr.dev/recipe</div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script>
+      // Load saved theme preference
+      const savedTheme = localStorage.getItem("preferred-theme");
+      if (savedTheme) {
+        document.body.className = `theme-${savedTheme}`;
+      }
+      // v1.3
+      $(document)
+        .on("click", ".set button, .text", function () {
+          $(this).siblings(".field").show().focus();
+          $(this).parent().children("button, .text").hide();
+        })
+        .delegate("textarea", "blur", function () {
+          $(this).html($(this).val());
+          $(this).hide();
+          let lines = $(this).val().split("\n");
+          var text = "";
+          var isOL = $(this).siblings("ol").is(":hidden");
+          $.each(lines, function () {
+            if (isOL) text = text + "<li>" + this + "</li>";
+            else text = text + "<p>" + this + "</p>";
+          });
+          $(this).prev(".text").html(text).show();
+        });
+      $("body")
+        .on("click", ".edit", function () {
+          if ($(this).find("textarea").length < 1) $(this).wrapInner("<textarea/>").find("textarea").focus();
+          else return;
+        })
+        .delegate(".edit textarea", "blur", function () {
+          $(this).parent().text(this.value);
+        });
+      function presave() {
+        $("#save").hide();
+        $("#dload").show();
+        $("#dname").val($("h3").text().replace(/\s/g, "")).focus();
+      }
+      function addSection() {
+        if ($("#items .mtitle").length >= 4 && !confirm("Are you sure you want to add another section?")) return;
+        $("#items").append(`<p class="mtitle edit" style="margin-top:25px;">Seasonings</p>
+                    <div class="set">
+                        <div class="text"></div>
+                        <textarea class="field">1 tsp Salt</textarea>
+                        <button class="secondary">ingredients</button>
+                    </div>`);
+      }
+      function addNote() {
+        $("#note").toggle();
+      }
+      function saveme(name) {
+        if (name.trim() == "") name = $("h3").text().replace(/\s/g, "");
+        if (name.trim() == "") name = "myrecipe";
+        var htmlContent = [$("html").html()];
+        var bl = new Blob(htmlContent, { type: "text/html" });
+        //window.save(bl, name + ".html");
+        var url = window.URL.createObjectURL(bl);
+        var a = document.createElement("a");
+        a.href = url;
+        a.download = name + ".html";
+        a.click();
+      }
+    </script>
+  </body>
+</html>
