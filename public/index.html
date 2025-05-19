@@ -1,74 +1,128 @@
-<!--written by Shalom R. || www.shalomr.dev -->
-<html>
+<!DOCTYPE html>
+<html lang="en">
   <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Family Recipe Box</title>
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css?family=Martel+Sans|Molle:400i|Raleway|Dancing+Script|Roboto&amp;display=swap" />
-    <link rel="stylesheet" href="css/main.css" />
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <link rel="stylesheet" href="css/modern.css" />
 
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script type="module" src="scripts/main.js"></script>
   </head>
-  <body>
-    <div style="text-align: right; margin: 15px">
-      <h3 id="main-title">Family Recipe Database</h3>
-      <button id="newb">+ New Entry</button>
-    </div>
-    <div id="tabled">
-      <table id="mytable" class="display" width="100%"></table>
-    </div>
-    <br />
-
-    <div class="hideme" id="welcome">
-      <div class="box">
-        <p><b>Welcome</b></p>
-        <p>A little background before we begin.</p>
-        <ul style="text-align: left">
-          <li>Your data is completely private since it is not saved to any servers.</li>
-          <li>
-            Any data you provide will be saved only on your browser, and will be available even if you close and
-            restart.
-          </li>
-          <li>
-            However, this means if you use a different browser or computer, you will start a new log for each device.
-          </li>
-          <li>Be sure you start your log on the device you plan to use regularly (such as your phone).</li>
-          <li>
-            Because we do not host your data, in order to pass your log from one device to another, use the provided
-            Export and Load-Data features.
-          </li>
-        </ul>
-        <p><button id="okb">OK</button></p>
-      </div>
-    </div>
-
-    <div class="hideme" id="new">
-      <div id="new-entry">
-        <div id="new-entry-title">
-          <p><b>New Entry</b></p>
-          <hr />
+  <body class="theme-orange">
+    <nav>
+      <h1 class="app-title handwritten">Family Recipe Box</h1>
+      <div class="nav-controls">
+        <div class="theme-switcher">
+          <button class="theme-btn" data-theme="blue">
+            <i class="fas fa-circle"></i>
+          </button>
+          <button class="theme-btn" data-theme="purple">
+            <i class="fas fa-circle"></i>
+          </button>
+          <button class="theme-btn" data-theme="orange">
+            <i class="fas fa-circle"></i>
+          </button>
         </div>
-        <p class="entry">
-          Title
-          <br /><input id="title" type="text" />
-        </p>
-        <p class="entry">
-          Category
-          <br /><input id="category" type="text" />
-        </p>
-        <p class="entry">
-          Tags
-          <br /><textarea style="height: 80px" id="comment" placeholder="Soup, Beef, Stew"></textarea>
-        </p>
-        <hr />
-        <p style="margin-top: 30px">
-          <button id="cancelb">Cancel</button>
-          <button id="addb">Add</button>
-          <button id="editb">Done</button>
-        </p>
+        <button id="newb" class="primary-btn"><i class="fas fa-plus"></i> New Recipe</button>
+      </div>
+    </nav>
+
+    <main>
+      <div class="table-container">
+        <table id="mytable" class="display" width="100%"></table>
+      </div>
+    </main>
+
+    <!-- Welcome Modal -->
+    <div class="modal hideme" id="welcome">
+      <div class="modal-content">
+        <h2 class="handwritten">Welcome to Recipe Database</h2>
+        <div class="modal-body">
+          <p class="subtitle">A little background before we begin:</p>
+          <ul>
+            <li>
+              <i class="fas fa-lock"></i>
+              Your data is completely private since it is not saved to any servers.
+            </li>
+            <li>
+              <i class="fas fa-database"></i>
+              Data is saved locally in your browser and persists between sessions.
+            </li>
+            <li>
+              <i class="fas fa-info-circle"></i>
+              Each device maintains its own separate database.
+            </li>
+            <li>
+              <i class="fas fa-mobile-alt"></i>
+              Start your log on your primary device (e.g., your phone).
+            </li>
+            <li>
+              <i class="fas fa-file-export"></i>
+              Use Export and Load-Data features to transfer between devices.
+            </li>
+          </ul>
+          <button id="okb" class="primary-btn">Got it!</button>
+        </div>
       </div>
     </div>
+
+    <!-- New Entry Modal -->
+    <div class="modal hideme" id="new">
+      <div class="modal-content">
+        <div class="form-container">
+          <div id="new-entry-title">
+            <h2 class="handwritten">New Recipe</h2>
+          </div>
+          <form id="recipe-form">
+            <div class="form-group">
+              <label for="title">Recipe Title</label>
+              <input id="title" type="text" placeholder="Enter recipe name" />
+            </div>
+
+            <div class="form-group">
+              <label for="category">Category</label>
+              <input id="category" type="text" placeholder="e.g., Main Course, Dessert" />
+            </div>
+
+            <div class="form-group">
+              <label for="comment">Tags</label>
+              <textarea id="comment" placeholder="e.g., Pasta, Italian, Beef"></textarea>
+            </div>
+
+            <div class="button-group">
+              <button type="button" id="cancelb" class="secondary-btn">Cancel</button>
+              <button type="button" id="addb" class="primary-btn">Add Recipe</button>
+              <button type="button" id="editb" class="primary-btn">Save Changes</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Theme switcher functionality
+      document.querySelectorAll(".theme-btn").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const theme = btn.dataset.theme;
+          document.body.className = `theme-${theme}`;
+          localStorage.setItem("preferred-theme", theme);
+        });
+      });
+
+      // Load saved theme preference
+      document.addEventListener("DOMContentLoaded", () => {
+        const savedTheme = localStorage.getItem("preferred-theme");
+        if (savedTheme) {
+          document.body.className = `theme-${savedTheme}`;
+        }
+      });
+    </script>
   </body>
 </html>

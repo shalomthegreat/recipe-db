@@ -1,0 +1,74 @@
+<!--written by Shalom R. || www.shalomr.dev -->
+<html>
+  <head>
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.20/css/jquery.dataTables.min.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css?family=Martel+Sans|Molle:400i|Raleway|Dancing+Script|Roboto&amp;display=swap" />
+    <link rel="stylesheet" href="css/main.css" />
+
+    <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
+    <script type="module" src="scripts/main.js"></script>
+  </head>
+  <body>
+    <div style="text-align: right; margin: 15px">
+      <h3 id="main-title">Family Recipe Database</h3>
+      <button id="newb">+ New Entry</button>
+    </div>
+    <div id="tabled">
+      <table id="mytable" class="display" width="100%"></table>
+    </div>
+    <br />
+
+    <div class="hideme" id="welcome">
+      <div class="box">
+        <p><b>Welcome</b></p>
+        <p>A little background before we begin.</p>
+        <ul style="text-align: left">
+          <li>Your data is completely private since it is not saved to any servers.</li>
+          <li>
+            Any data you provide will be saved only on your browser, and will be available even if you close and
+            restart.
+          </li>
+          <li>
+            However, this means if you use a different browser or computer, you will start a new log for each device.
+          </li>
+          <li>Be sure you start your log on the device you plan to use regularly (such as your phone).</li>
+          <li>
+            Because we do not host your data, in order to pass your log from one device to another, use the provided
+            Export and Load-Data features.
+          </li>
+        </ul>
+        <p><button id="okb">OK</button></p>
+      </div>
+    </div>
+
+    <div class="hideme" id="new">
+      <div id="new-entry">
+        <div id="new-entry-title">
+          <p><b>New Entry</b></p>
+          <hr />
+        </div>
+        <p class="entry">
+          Title
+          <br /><input id="title" type="text" />
+        </p>
+        <p class="entry">
+          Category
+          <br /><input id="category" type="text" />
+        </p>
+        <p class="entry">
+          Tags
+          <br /><textarea style="height: 80px" id="comment" placeholder="Soup, Beef, Stew"></textarea>
+        </p>
+        <hr />
+        <p style="margin-top: 30px">
+          <button id="cancelb">Cancel</button>
+          <button id="addb">Add</button>
+          <button id="editb">Done</button>
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

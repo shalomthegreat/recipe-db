@@ -1,30 +1,46 @@
 require("dotenv").config();
 const express = require("express");
-const { MongoClient } = require("mongodb");
+const { connectDB, closeDB } = require("./config/db");
+const recipeRoutes = require("./routes/recipeRoutes");
 
 const app = express();
-const port = 3000;
-const uri = process.env.MONGO_URI_RECIPES;
+const port = process.env.PORT || 3000;
 
+// Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-const client = new MongoClient(uri);
+// API Routes
+app.use("/api/recipes", recipeRoutes);
 
-app.get("/api/recipes", async (req, res) => {
+// Connect to database and start server
+async function startServer() {
   try {
-    await client.connect();
-    const database = client.db("myrecipes");
-    const collection = database.collection("recipes");
-    const recipes = await collection.find({}).toArray();
-    res.json(recipes);
-  } catch (error) {
-    res.status(500).send("Error fetching recipes");
-  } finally {
-    await client.close();
-  }
-});
+    // Connect to MongoDB
+    await connectDB();
 
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
-});
+    // Start Express server
+    app.listen(port, () => {
+      console.log(`Server running at http://localhost:${port}`);
+    });
+
+    // Handle graceful shutdown
+    process.on("SIGINT", async () => {
+      console.log("Shutting down server...");
+      await closeDB();
+      process.exit(0);
+    });
+
+    process.on("SIGTERM", async () => {
+      console.log("Shutting down server...");
+      await closeDB();
+      process.exit(0);
+    });
+  } catch (error) {
+    console.error("Failed to start server:", error);
+    process.exit(1);
+  }
+}
+
+startServer();
