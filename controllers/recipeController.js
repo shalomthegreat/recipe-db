@@ -66,10 +66,17 @@ async function createRecipe(req, res) {
   try {
     const recipeData = req.body;
     
+    // Log the incoming data for debugging
+    console.log('Creating recipe with data:', JSON.stringify(recipeData));
+    
     // Validate recipe data
     const validation = validateRecipe(recipeData);
     if (!validation.isValid) {
-      return res.status(400).json({ errors: validation.errors });
+      console.log('Validation failed:', validation.errors);
+      return res.status(400).json({ 
+        error: 'Validation failed', 
+        details: validation.errors 
+      });
     }
     
     const db = getDB();
@@ -78,7 +85,7 @@ async function createRecipe(req, res) {
     res.status(201).json(newRecipe);
   } catch (error) {
     console.error('Error creating recipe:', error);
-    res.status(500).json({ error: 'Error creating recipe' });
+    res.status(500).json({ error: 'Error creating recipe: ' + error.message });
   }
 }
 

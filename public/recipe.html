@@ -19,7 +19,30 @@
     <style>
       /* v2.0 */
       html {
-        padding-top: 30px;
+        padding-top: 0;
+      }
+      .recipe-nav {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1rem 2rem;
+        background-color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        font-family: "Poppins", sans-serif;
+      }
+      .back-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: var(--primary-dark);
+        font-weight: 500;
+        text-decoration: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: background-color 0.2s;
+      }
+      .back-btn:hover {
+        background-color: var(--primary-light);
       }
       .fstandard {
         font-family: "Raleway", sans-serif;
@@ -145,14 +168,31 @@
         word-break: break-word;
       }
       #credit {
-        font-size: small;
-        color: var(--primary-dark);
-        margin-top: 40px;
-        float: right;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1.5rem;
+        margin-top: 3rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--primary-color);
         font-family: "Poppins", sans-serif;
+        font-size: 0.85rem;
+        color: #777;
+      }
+      #credit .meta-label {
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.7rem;
+        color: #aaa;
+        margin-right: 0.25rem;
+      }
+      #credit .meta-value {
+        color: var(--primary-dark);
+        font-weight: 500;
       }
       #credit span.edit {
-        margin-right: 50px;
+        color: var(--primary-dark);
+        font-weight: 500;
       }
       button {
         transition: all 0.3s ease;
@@ -187,7 +227,7 @@
         border-radius: 12px;
         padding: 2.5rem;
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-        margin-top: 2rem;
+        margin-top: 3rem;
       }
       h3.fdancing {
         color: var(--primary-color);
@@ -223,7 +263,7 @@
           font-size: 110%;
         }
         .container {
-          margin-top: 0;
+          margin-top: 30px;
           max-width: 100%;
           width: 90%;
         }
@@ -238,16 +278,13 @@
         .edit {
           padding: 0;
         }
+        .recipe-nav,
         #actions,
         .modify {
           display: none;
         }
         #credit {
-          position: fixed;
-          bottom: 30px;
-        }
-        #credits {
-          font-size: 0.7rem;
+          border-top: 1px solid lightgray;
         }
         .mtitle {
           color: var(--primary-dark);
@@ -273,6 +310,9 @@
     </style>
   </head>
   <body class="theme-orange">
+    <nav class="recipe-nav">
+      <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Recipes</a>
+    </nav>
     <div class="container wiggle">
       <div class="row">
         <span id="actions" style="float: right">
@@ -345,10 +385,14 @@
           </div>
         </div>
       </div>
-      <div id="credit">recipe by | <span class="edit wider">Shalom R</span> created at | shalomr.dev/recipe</div>
+      <div id="credit">
+        <span><span class="meta-label">recipe by</span> <span class="edit wider">Shalom R</span></span>
+        <span><span class="meta-label">created at</span> <span class="meta-value">shalomr.dev/recipe</span></span>
+      </div>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
+    <script src="scripts/recipe.js"></script>
     <script>
       // Load saved theme preference
       const savedTheme = localStorage.getItem("preferred-theme");

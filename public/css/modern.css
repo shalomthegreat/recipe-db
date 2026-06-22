@@ -178,19 +178,62 @@ table.dataTable tbody tr:hover {
   background: var(--primary-light);
 }
 
-a {
-  text-decoration: underline;
-  color: black;
+.action-buttons {
+  display: flex;
+  gap: 5px;
 }
-a.edit.icon {
-  font-size: 25px;
-  line-height: 25px;
-  background: var(--accent-color);
+a {
+  text-decoration: none;
+  color: var(--primary-dark);
+  font-weight: 500;
+}
+
+.action-buttons {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+button.action-btn.icon {
+  font-size: 1rem;
+  width: 2.2rem;
+  height: 2.2rem;
+  border: none;
   border-radius: 50%;
-  padding: 8px;
-  aspect-ratio: 1 / 1;
-  display: inline-block;
   cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-color);
+  color: var(--primary-dark);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+button.action-btn.icon:hover {
+  transform: scale(1.15);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+  background-color: var(--primary-light);
+}
+
+button.delete-btn.icon {
+  background: #ffeaea;
+  color: #c0392b;
+}
+
+button.delete-btn.icon:hover {
+  background-color: #ffcccc;
+  color: #a93226;
+}
+
+/* Make entire row clickable */
+table.dataTable tbody tr {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+table.dataTable tbody tr td:last-child {
+  cursor: default;
 }
 
 /* Modal */

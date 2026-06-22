@@ -95,6 +95,14 @@
               <label for="comment">Tags</label>
               <textarea id="comment" placeholder="e.g., Pasta, Italian, Beef"></textarea>
             </div>
+            
+            <div class="form-group">
+              <label for="author">Author</label>
+              <input id="author" type="text" placeholder="Recipe creator (optional)" />
+            </div>
+            
+            <!-- Hidden field for recipe ID when editing -->
+            <input type="hidden" id="recipe-id" />
 
             <div class="button-group">
               <button type="button" id="cancelb" class="secondary-btn">Cancel</button>

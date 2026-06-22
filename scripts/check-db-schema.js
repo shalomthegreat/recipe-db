@@ -1,5 +1,6 @@
 require('dotenv').config();
 const { MongoClient } = require('mongodb');
+const { reportConnectionError } = require('../config/db');
 
 async function checkDatabaseSchema() {
   const uri = process.env.MONGO_URI_RECIPES;
@@ -10,9 +11,11 @@ async function checkDatabaseSchema() {
   }
   
   const client = new MongoClient(uri);
+  let connected = false;
   
   try {
     await client.connect();
+    connected = true;
     console.log('Connected to MongoDB');
     
     const database = client.db('myrecipes');
@@ -62,10 +65,13 @@ async function checkDatabaseSchema() {
     }
     
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    reportConnectionError(error);
+    process.exitCode = 1;
   } finally {
     await client.close();
-    console.log('MongoDB connection closed');
+    if (connected) {
+      console.log('MongoDB connection closed');
+    }
   }
 }
 

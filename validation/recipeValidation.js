@@ -43,13 +43,10 @@ function validateRecipe(recipeData) {
     }
   }
   
-  // Validate steps
+  // Validate steps if provided
   if (recipeData.steps) {
     if (!Array.isArray(recipeData.steps)) {
       errors.steps = 'Steps must be an array';
-    } else if (recipeData.steps.length === 0 && !recipeData._id) {
-      // Only require steps for new recipes
-      errors.steps = 'At least one step is required';
     } else {
       const emptySteps = recipeData.steps.some(
         step => !step || step.trim() === ''
@@ -59,10 +56,8 @@ function validateRecipe(recipeData) {
         errors.steps = 'Steps cannot be empty';
       }
     }
-  } else if (!recipeData._id) {
-    // Only require steps for new recipes
-    errors.steps = 'Steps are required';
   }
+  // Steps are now optional for new recipes
   
   // Validate notes if provided
   if (recipeData.notes && !Array.isArray(recipeData.notes)) {
