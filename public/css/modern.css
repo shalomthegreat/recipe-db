@@ -134,6 +134,11 @@ table.dataTable {
   width: 100%;
 }
 
+#mytable_filter,
+#mytable_length {
+  margin-bottom: 1rem;
+}
+
 table.dataTable thead th {
   background-color: var(--primary-light);
   color: var(--primary-dark);
@@ -272,6 +277,16 @@ table.dataTable tbody tr td:last-child {
   color: var(--primary-color);
   margin-bottom: 1.5rem;
   font-size: 2.2rem;
+}
+
+#new-entry-title {
+  text-align: center;
+  font-style: italic;
+  font-size: 1.8rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+  padding-bottom: 1rem;
+  border-bottom: 3px solid var(--primary-color);
+  margin-bottom: 2rem;
 }
 
 /* Form Styles */

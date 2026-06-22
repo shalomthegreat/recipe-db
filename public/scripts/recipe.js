@@ -38,11 +38,11 @@ function populateRecipeData(recipe) {
   // Set title
   $("h3.fdancing").text(recipe.title || "Recipe Title");
   
-  // Set time information
-  $("#prep").text(recipe.prep || "");
-  $("#bake").text(recipe.cook || "");
-  $("#total").text(recipe.total || "");
-  $("#yield").text(recipe.yield || "");
+  // Set time information (with defaults for empty recipes)
+  $("#prep").text(recipe.prep || "20 mins");
+  $("#bake").text(recipe.cook || "30 mins");
+  $("#total").text(recipe.total || "50 mins");
+  $("#yield").text(recipe.yield || "8 servings");
   
   // Handle ingredients (complex structure)
   const $items = $("#items");
@@ -62,17 +62,17 @@ function populateRecipeData(recipe) {
       $items.append(`
         <div class="set">
           <div class="text">${ingredientsHtml}</div>
-          <textarea class="field">${items.join("\\n")}</textarea>
+          <textarea class="field">${items.join("\n")}</textarea>
         </div>
       `);
     });
   } else {
-    // Add default empty section
+    // Add default cake-baking ingredients section
     $items.append(`
-      <p class="mtitle edit">Ingredients</p>
+      <p class="mtitle edit">Dry</p>
       <div class="set">
-        <div class="text"></div>
-        <textarea class="field"></textarea>
+        <div class="text">2 cups all-purpose flour<br>1 cup granulated sugar<br>1 tbsp baking powder</div>
+        <textarea class="field">2 cups all-purpose flour\n1 cup granulated sugar\n1 tbsp baking powder</textarea>
       </div>
     `);
   }
@@ -81,29 +81,37 @@ function populateRecipeData(recipe) {
   const $instructions = $("#instructions");
   $instructions.empty();
   
+  const defaultSteps = [
+    'Preheat oven to 350\u00B0F',
+    'Mix dry ingredients in a large bowl',
+    'Add wet ingredients and stir until smooth'
+  ];
+
   if (recipe.steps && recipe.steps.length > 0) {
     recipe.steps.forEach(step => {
       $instructions.append(`<li>${step}</li>`);
     });
   } else {
-    $instructions.append("<li>Add instructions here</li>");
+    defaultSteps.forEach(step => {
+      $instructions.append(`<li>${step}</li>`);
+    });
   }
-  
+
   // Update the instructions textarea
-  const instructionsText = recipe.steps ? recipe.steps.join("\\n") : "";
+  const instructionsText = recipe.steps && recipe.steps.length > 0 ? recipe.steps.join("\n") : defaultSteps.join("\n");
   $instructions.siblings("textarea").val(instructionsText);
   
   // Set notes if they exist
   if (recipe.notes && recipe.notes.length > 0) {
     $("#note").show();
     $("#note .text").html(recipe.notes.join("<br>"));
-    $("#note textarea").val(recipe.notes.join("\\n"));
+    $("#note textarea").val(recipe.notes.join("\n"));
   } else {
     $("#note").hide();
   }
   
   // Set credits
-  $("#credits").text(recipe.credit ? `Credits - ${recipe.credit}` : "");
+  $("#credits").text(recipe.credit || "Inspiration: [e.g. that one blog post]");
   
   // Set author
   $("span.edit.wider").text(recipe.author || "");
@@ -124,7 +132,7 @@ async function saveRecipe() {
     total: $("#total").text().trim(),
     yield: $("#yield").text().trim(),
     author: $("span.edit.wider").text().trim(),
-    credit: $("#credits").text().replace("Credits - ", "").trim()
+    credit: $("#credits").text().trim()
   };
   
   // Collect ingredients by section
@@ -133,7 +141,7 @@ async function saveRecipe() {
     const sectionName = $(this).text().trim();
     const $set = $(this).next(".set");
     const itemsText = $set.find("textarea").val();
-    const items = itemsText ? itemsText.split("\\n").filter(item => item.trim() !== "") : [];
+    const items = itemsText ? itemsText.split("\n").filter(item => item.trim() !== "") : [];
     
     recipeData.ingredients.push({
       section: sectionName,
@@ -143,12 +151,12 @@ async function saveRecipe() {
   
   // Collect instructions
   const instructionsText = $("#instructions").siblings("textarea").val();
-  recipeData.steps = instructionsText ? instructionsText.split("\\n").filter(step => step.trim() !== "") : [];
+  recipeData.steps = instructionsText ? instructionsText.split("\n").filter(step => step.trim() !== "") : [];
   
   // Collect notes
   if ($("#note").is(":visible")) {
     const notesText = $("#note textarea").val();
-    recipeData.notes = notesText ? notesText.split("\\n").filter(note => note.trim() !== "") : [];
+    recipeData.notes = notesText ? notesText.split("\n").filter(note => note.trim() !== "") : [];
   } else {
     recipeData.notes = [];
   }

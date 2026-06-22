@@ -380,8 +380,8 @@
             <textarea class="field">NOTE: </textarea>
           </div>
           <div class="set">
-            <div class="text" id="credits">Credits - https://www.kingarthurflour.com/recipes/banana-bread-recipe</div>
-            <textarea class="field">Credits - </textarea>
+            <div class="text" id="credits">Inspiration: [e.g. that one blog post]</div>
+            <textarea class="field">Inspiration: [e.g. that one blog post]</textarea>
           </div>
         </div>
       </div>
@@ -425,11 +425,13 @@
         .delegate(".edit textarea", "blur", function () {
           $(this).parent().text(this.value);
         });
+      /* Unused - overridden by recipe.js
       function presave() {
         $("#save").hide();
         $("#dload").show();
         $("#dname").val($("h3").text().replace(/\s/g, "")).focus();
       }
+      */
       function addSection() {
         if ($("#items .mtitle").length >= 4 && !confirm("Are you sure you want to add another section?")) return;
         $("#items").append(`<p class="mtitle edit" style="margin-top:25px;">Seasonings</p>
@@ -442,6 +444,7 @@
       function addNote() {
         $("#note").toggle();
       }
+      /* Unused - only called from presave() which is overridden by recipe.js
       function saveme(name) {
         if (name.trim() == "") name = $("h3").text().replace(/\s/g, "");
         if (name.trim() == "") name = "myrecipe";
@@ -454,6 +457,7 @@
         a.download = name + ".html";
         a.click();
       }
+      */
     </script>
   </body>
 </html>
