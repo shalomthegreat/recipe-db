@@ -109,6 +109,49 @@ function clearForm() {
   $("#comment").val("");
   $("#author").val("");
   $("#recipe-id").val(""); // Hidden field for recipe ID when editing
+  clearValidation();
+}
+
+// Inline validation functions
+function showFieldError(fieldId, message) {
+  const $input = $("#" + fieldId);
+  const $error = $("#" + fieldId + "-error");
+  $input.addClass("invalid").removeClass("valid");
+  $error.text(message).addClass("visible");
+}
+
+function clearFieldError(fieldId) {
+  const $input = $("#" + fieldId);
+  const $error = $("#" + fieldId + "-error");
+  $input.removeClass("invalid");
+  if ($input.val().trim()) {
+    $input.addClass("valid");
+  } else {
+    $input.removeClass("valid");
+  }
+  $error.text("").removeClass("visible");
+}
+
+function clearValidation() {
+  $("#title, #category").removeClass("invalid valid");
+  $(".error-message").text("").removeClass("visible");
+}
+
+function validateField(fieldId) {
+  const value = $("#" + fieldId).val().trim();
+  if (!value) {
+    const label = fieldId === "title" ? "Title" : "Category";
+    showFieldError(fieldId, label + " is required");
+    return false;
+  }
+  clearFieldError(fieldId);
+  return true;
+}
+
+function validateForm() {
+  const isTitleValid = validateField("title");
+  const isCategoryValid = validateField("category");
+  return isTitleValid && isCategoryValid;
 }
 
 // API functions
@@ -357,14 +400,11 @@ $(document).ready(function () {
 
   // Create new recipe
   $("#addb").click(async function () {
-    const recipeData = createRecipeObject();
-
-    // Basic validation
-    if (!recipeData.title || !recipeData.category) {
-      showError("Title and category are required!");
+    if (!validateForm()) {
       return;
     }
 
+    const recipeData = createRecipeObject();
     const newRecipe = await createRecipe(recipeData);
     if (newRecipe) {
       $(".hideme").fadeOut();
@@ -389,6 +429,10 @@ $(document).ready(function () {
       return;
     }
 
+    if (!validateForm()) {
+      return;
+    }
+
     // Get the form data
     const formData = {
       title: $("#title").val().trim(),
@@ -396,12 +440,6 @@ $(document).ready(function () {
       tags: $("#comment").val().trim(),
       author: $("#author").val() || ""
     };
-
-    // Basic validation
-    if (!formData.title || !formData.category) {
-      showError("Title and category are required!");
-      return;
-    }
 
     // Merge the form data with existing recipe data
     // This preserves all the fields that aren't in our simplified form
@@ -418,6 +456,18 @@ $(document).ready(function () {
   });
 
   // Delete recipe button events are now handled by bindEditDeleteButtons()
+
+  // Real-time inline validation on required fields
+  $("#title, #category").on("blur", function () {
+    validateField(this.id);
+  });
+
+  $("#title, #category").on("input", function () {
+    const $input = $(this);
+    if ($input.hasClass("invalid")) {
+      validateField(this.id);
+    }
+  });
 
   // Fetch initial data
   fetchRecipes();
