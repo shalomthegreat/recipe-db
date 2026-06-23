@@ -1,5 +1,6 @@
 // data setup
 var dataSet = [];
+var currentEditRecipe = null;
 var columnsF = [
   { title: "Title", data: "title" },
   { title: "Category", data: "category" },
@@ -109,6 +110,7 @@ function clearForm() {
   $("#comment").val("");
   $("#author").val("");
   $("#recipe-id").val(""); // Hidden field for recipe ID when editing
+  currentEditRecipe = null;
   clearValidation();
 }
 
@@ -155,9 +157,9 @@ function validateForm() {
 }
 
 // API functions
-async function fetchRecipes() {
+async function fetchRecipes(silent = false) {
   try {
-    showLoader();
+    if (!silent) showLoader();
     const response = await fetch("/api/recipes");
 
     if (!response.ok) {
@@ -167,17 +169,16 @@ async function fetchRecipes() {
     const recipes = await response.json();
     dataSet = recipes;
     init();
-    hideLoader();
+    if (!silent) hideLoader();
   } catch (error) {
     console.error("Error fetching recipes:", error);
     showError("Failed to load recipes. Please try again later.");
-    hideLoader();
+    if (!silent) hideLoader();
   }
 }
 
 async function fetchRecipeById(id) {
   try {
-    showLoader();
     const response = await fetch(`/api/recipes/${id}`);
 
     if (!response.ok) {
@@ -185,19 +186,16 @@ async function fetchRecipeById(id) {
     }
 
     const recipe = await response.json();
-    hideLoader();
     return recipe;
   } catch (error) {
     console.error(`Error fetching recipe ${id}:`, error);
     showError("Failed to load recipe details. Please try again later.");
-    hideLoader();
     return null;
   }
 }
 
 async function createRecipe(recipeData) {
   try {
-    showLoader();
     const response = await fetch("/api/recipes", {
       method: "POST",
       headers: {
@@ -223,20 +221,17 @@ async function createRecipe(recipeData) {
     }
 
     const newRecipe = await response.json();
-    hideLoader();
     showSuccess("Recipe created successfully!");
     return newRecipe;
   } catch (error) {
     console.error("Error creating recipe:", error);
     showError(error.message || "Failed to create recipe. Please check your data and try again.");
-    hideLoader();
     return null;
   }
 }
 
 async function updateRecipe(id, recipeData) {
   try {
-    showLoader();
     const response = await fetch(`/api/recipes/${id}`, {
       method: "PUT",
       headers: {
@@ -251,20 +246,17 @@ async function updateRecipe(id, recipeData) {
     }
 
     const updatedRecipe = await response.json();
-    hideLoader();
     showSuccess("Recipe updated successfully!");
     return updatedRecipe;
   } catch (error) {
     console.error(`Error updating recipe ${id}:`, error);
     showError("Failed to update recipe. Please check your data and try again.");
-    hideLoader();
     return null;
   }
 }
 
 async function deleteRecipe(id) {
   try {
-    showLoader();
     const response = await fetch(`/api/recipes/${id}`, {
       method: "DELETE"
     });
@@ -273,13 +265,11 @@ async function deleteRecipe(id) {
       throw new Error(`HTTP error! Status: ${response.status}`);
     }
 
-    hideLoader();
     showSuccess("Recipe deleted successfully!");
     return true;
   } catch (error) {
     console.error(`Error deleting recipe ${id}:`, error);
     showError("Failed to delete recipe. Please try again later.");
-    hideLoader();
     return false;
   }
 }
@@ -319,6 +309,9 @@ function bindEditDeleteButtons() {
     console.log("Fetched recipe:", recipe);
     
     if (recipe) {
+      // Cache the full recipe object so we don't need to re-fetch on save
+      currentEditRecipe = recipe;
+
       // Populate the form with recipe data - simplified for our basic form
       $("#title").val(recipe.title || "");
       $("#category").val(recipe.category || "");
@@ -329,7 +322,7 @@ function bindEditDeleteButtons() {
       $("#recipe-id").val(recipe._id);
       
       // Update form title and show edit button
-      $("#new-entry-title").text("Edit Recipe");
+      $("#new-entry-title h2").text("Edit Recipe");
       $("#addb").hide();
       $("#editb").show();
       
@@ -355,7 +348,7 @@ function bindEditDeleteButtons() {
     showConfirmDialog("Are you sure you want to delete this recipe?", async function () {
       const deleted = await deleteRecipe(recipeId);
       if (deleted) {
-        await fetchRecipes(); // Refresh the recipe list
+        await fetchRecipes(true); // Refresh the recipe list silently
       }
     });
   });
@@ -372,7 +365,8 @@ $(document).ready(function () {
   // Click functions
   $("#newb").click(function () {
     clearForm();
-    $("#new-entry-title").text("New Recipe");
+    currentEditRecipe = null;
+    $("#new-entry-title h2").text("New Recipe");
     $("#recipe-id").val(""); // Clear any existing recipe ID
     $("#addb").show();
     $("#editb").hide();
@@ -397,8 +391,9 @@ $(document).ready(function () {
     const recipeData = createRecipeObject();
     const newRecipe = await createRecipe(recipeData);
     if (newRecipe) {
-      $(".hideme").fadeOut();
-      await fetchRecipes(); // Refresh the recipe list
+      $("#new").fadeOut(200, async function() {
+          await fetchRecipes(true);
+      });
     }
   });
 
@@ -412,10 +407,10 @@ $(document).ready(function () {
       return;
     }
 
-    // First fetch the existing recipe to preserve data not in our form
-    const existingRecipe = await fetchRecipeById(recipeId);
+    // Use the cached recipe from when the edit modal was opened
+    const existingRecipe = currentEditRecipe;
     if (!existingRecipe) {
-      showError("Could not fetch the existing recipe!");
+      showError("Recipe data is missing. Please close and reopen the edit dialog.");
       return;
     }
 
@@ -443,8 +438,9 @@ $(document).ready(function () {
 
     const updatedRecipe = await updateRecipe(recipeId, recipeData);
     if (updatedRecipe) {
-      $(".hideme").fadeOut();
-      await fetchRecipes(); // Refresh the recipe list
+      $("#new").fadeOut(200, async function() {
+        await fetchRecipes(true);
+      });
     }
   });
 
