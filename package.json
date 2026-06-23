@@ -11,7 +11,7 @@
   },
   "keywords": ["recipes", "mongodb", "express", "api"],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
