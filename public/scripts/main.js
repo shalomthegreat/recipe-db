@@ -352,12 +352,12 @@ function bindEditDeleteButtons() {
       return;
     }
     
-    if (confirm("Are you sure you want to delete this recipe?")) {
+    showConfirmDialog("Are you sure you want to delete this recipe?", async function () {
       const deleted = await deleteRecipe(recipeId);
       if (deleted) {
         await fetchRecipes(); // Refresh the recipe list
       }
-    }
+    });
   });
 }
 

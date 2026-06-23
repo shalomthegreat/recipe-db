@@ -49,6 +49,40 @@ function showSuccess(message) {
   showNotification(message, "success", 3000);
 }
 
+function showConfirmDialog(message, onConfirm) {
+  const container = document.getElementById("confirm-modal");
+  if (!container) {
+    console.error("Confirm modal not found in DOM");
+    return;
+  }
+
+  const msgEl = container.querySelector(".confirm-message");
+  if (msgEl) msgEl.textContent = message;
+
+  $(container).css({ opacity: 0, top: "-20px" }).show().animate({ opacity: 1, top: "0px" }, 200);
+
+  const yesBtn = container.querySelector("#confirm-yes");
+  const noBtn = container.querySelector("#confirm-no");
+
+  function cleanup() {
+    $(container).fadeOut();
+    yesBtn.removeEventListener("click", onYes);
+    noBtn.removeEventListener("click", onNo);
+  }
+
+  function onYes() {
+    cleanup();
+    if (typeof onConfirm === "function") onConfirm();
+  }
+
+  function onNo() {
+    cleanup();
+  }
+
+  yesBtn.addEventListener("click", onYes);
+  noBtn.addEventListener("click", onNo);
+}
+
 window.testToast = {
   success: function (msg) {
     showSuccess(msg || "Test success notification");

@@ -391,6 +391,18 @@
       </div>
     </div>
 
+    <!-- Confirm Modal -->
+    <div class="modal hideme" id="confirm-modal">
+      <div class="modal-content confirm-content">
+        <h2 class="handwritten">Confirm</h2>
+        <p class="confirm-message">Are you sure?</p>
+        <div class="confirm-buttons">
+          <button type="button" id="confirm-no" class="secondary-btn">Cancel</button>
+          <button type="button" id="confirm-yes" class="primary-btn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
     <script src="https://code.jquery.com/jquery-3.4.1.js"></script>
     <script src="scripts/notifications.js"></script>
     <script src="scripts/recipe.js"></script>
@@ -434,7 +446,16 @@
       }
       */
       function addSection() {
-        if ($("#items .mtitle").length >= 4 && !confirm("Are you sure you want to add another section?")) return;
+        if ($("#items .mtitle").length >= 4) {
+          showConfirmDialog("Are you sure you want to add another section?", function () {
+            appendSection();
+          });
+          return;
+        }
+        appendSection();
+      }
+
+      function appendSection() {
         $("#items").append(`<p class="mtitle edit" style="margin-top:25px;">Seasonings</p>
                     <div class="set">
                         <div class="text"></div>
