@@ -108,8 +108,8 @@ async function updateRecipe(db, id, updateData) {
       { $set: updatedRecipe },
       { returnDocument: 'after' }
     );
-    
-    return result.value;
+
+    return result;
   } catch (error) {
     console.error('Error updating recipe:', error);
     return null;

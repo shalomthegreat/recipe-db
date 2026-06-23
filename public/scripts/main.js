@@ -438,6 +438,9 @@ $(document).ready(function () {
       ...formData
     };
 
+    // Remove _id before sending - MongoDB rejects updates to the immutable _id field
+    delete recipeData._id;
+
     const updatedRecipe = await updateRecipe(recipeId, recipeData);
     if (updatedRecipe) {
       $(".hideme").fadeOut();
