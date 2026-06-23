@@ -295,16 +295,6 @@ function hideLoader() {
   $("#loader").hide();
 }
 
-function showError(message) {
-  // Display error message to user
-  alert(message); // Simple implementation, could be improved with a toast or modal
-}
-
-function showSuccess(message) {
-  // Display success message to user
-  alert(message); // Simple implementation, could be improved with a toast or modal
-}
-
 // Function to bind edit and delete button events after table is drawn
 function bindEditDeleteButtons() {
   // Remove any existing handlers to prevent duplicates

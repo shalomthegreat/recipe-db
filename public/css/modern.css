@@ -371,6 +371,65 @@ table.dataTable tbody tr td:last-child {
   font-size: 1.2rem;
 }
 
+/* Notification System */
+#notification-container {
+  position: fixed;
+  top: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.notification {
+  pointer-events: auto;
+  position: relative;
+  border-radius: 8px;
+  padding: 12px 20px;
+  min-width: 280px;
+  max-width: 400px;
+  text-align: center;
+  font-family: "Poppins", sans-serif;
+  font-weight: 500;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  color: #fff;
+  opacity: 0;
+  transform: translateY(-20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.notification.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.notification.success {
+  background: var(--primary-color);
+}
+
+.notification.error {
+  background: #e67e22;
+}
+
+.notification .progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.4);
+  border-radius: 0 0 0 8px;
+  animation: progress-shrink linear forwards;
+}
+
+@keyframes progress-shrink {
+  from { width: 100%; }
+  to { width: 0%; }
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   nav {

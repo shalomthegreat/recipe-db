@@ -198,14 +198,6 @@ function hideLoader() {
   $("#loader").hide();
 }
 
-function showError(message) {
-  alert(message);
-}
-
-function showSuccess(message) {
-  alert(message);
-}
-
 // Initialize on document ready
 $(document).ready(function() {
   // Override the presave function
