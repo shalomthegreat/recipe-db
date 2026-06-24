@@ -293,27 +293,15 @@ h3.fdancing {
 }
 
 /* =========================================================
-   PRINT LAYOUT  —  professional recipe card
-   Refined warm palette (avoids the muddy dark gold),
-   tuned type scale, and balanced spacing.
+   PRINT LAYOUT 
    ========================================================= */
 @media print {
   @page {
     margin: 1.3cm 1.5cm;
   }
-  /* Print-only palette: a brighter, cleaner gold reads far
-     better on paper than the dark UI tone. */
-  body {
-    --pa: #c8923c; /* print accent gold */
-    --pa-deep: #a9762b; /* deeper gold for fine borders */
-    --pa-tint: #faf3e4; /* soft callout background */
-    --ink: #2b2b2b; /* primary text */
-    --muted: #837a6c; /* secondary / labels */
-  }
   html,
   body {
     background: #fff;
-    color: var(--ink);
     font-family: "Poppins", sans-serif;
     font-size: 11.5pt;
     line-height: 1.55;
@@ -336,8 +324,9 @@ h3.fdancing {
   #actions,
   .modify,
   .modal,
-  #noteb {
-    display: none;
+  #noteb,
+  #loader {
+    display: none !important;
   }
 
   /* Disable hover affordances so nothing shifts when printing */
@@ -358,7 +347,6 @@ h3.fdancing {
   h3.fdancing {
     display: block;
     text-align: center;
-    color: var(--pa);
     font-size: 3.1rem;
     line-height: 1.1;
     margin: 0 0 0.3rem 0;
@@ -376,7 +364,6 @@ h3.fdancing {
   }
   .mtitle {
     display: block;
-    color: var(--muted);
     font-size: 0.62rem;
     letter-spacing: 1.2px;
     font-weight: 600;
@@ -387,21 +374,20 @@ h3.fdancing {
   #total,
   #yield {
     display: block;
-    color: var(--ink);
     font-size: 0.95rem;
     font-weight: 500;
   }
 
   /* ---------- Section headings (Ingredients / Instructions) ---------- */
   h5 {
-    color: var(--pa);
+    color: var(--primary-color);
     font-size: 1.05rem;
     font-weight: 600;
     letter-spacing: 0.6px;
     text-transform: uppercase;
     padding-bottom: 0.35rem;
     margin-bottom: 0.9rem;
-    /* border-bottom: 1px solid var(--pa-tint); */
+    /* border-bottom: 1px solid var(--primary-light); */
     /* Never let a section heading sit alone at the bottom of a page */
     break-after: avoid;
     page-break-after: avoid;
@@ -421,7 +407,6 @@ h3.fdancing {
 
   /* Ingredient sub-section labels (Wet / Dry / ...) */
   #items .mtitle {
-    color: var(--pa-deep);
     font-size: 0.68rem;
     margin-top: 1rem;
     margin-bottom: 0.35rem;
@@ -443,7 +428,7 @@ h3.fdancing {
   }
   #instructions li::before {
     content: counter(item);
-    background: var(--pa);
+    background: var(--primary-color);
     color: #fff;
     border: none;
     width: 1.5rem;
@@ -458,8 +443,8 @@ h3.fdancing {
 
   /* ---------- NOTE callout (styling allowed) ---------- */
   #note {
-    background: var(--pa-tint);
-    border-left: 3px solid var(--pa);
+    background: var(--primary-light);
+    border-left: 3px solid var(--primary-color);
     border-radius: 4px;
     padding: 0.7rem 1rem;
     margin: 0.5rem 0 1.4rem;
@@ -468,14 +453,14 @@ h3.fdancing {
   #note .text {
     font-size: 0.88rem;
     font-style: italic;
-    color: var(--muted);
+    color: var(--primary-dark);
     line-height: 1.55;
     margin-bottom: 1rem;
   }
 
   /* ---------- Inspiration (#credits) — moved to a quiet footnote ---------- */
   #credits {
-    color: var(--muted);
+    color: var(--primary-dark);
     font-size: 0.72rem;
     font-style: italic;
     text-align: left;
@@ -492,19 +477,18 @@ h3.fdancing {
     bottom: 0;
     margin: 0;
     padding-top: 0.8rem;
-    border-top: 1px solid var(--pa-tint);
+    border-top: 1px solid var(--primary-light);
     flex-direction: row;
     justify-content: space-between;
     font-size: 0.75rem;
-    color: var(--muted);
+    color: var(--primary-dark);
   }
   #credit .meta-label {
-    color: var(--muted);
+    color: var(--primary-dark);
     font-size: 0.6rem;
     letter-spacing: 0.8px;
   }
   #credit .meta-value {
-    color: var(--pa-deep);
     font-weight: 500;
   }
 }

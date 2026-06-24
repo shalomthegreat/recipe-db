@@ -8,7 +8,7 @@ function getRecipeIdFromUrl() {
 }
 
 // Fetch recipe data from API
-async function fetchRecipe() {
+async function fetchRecipe(isInitial = false) {
   recipeId = getRecipeIdFromUrl();
   if (!recipeId) {
     showError("No recipe ID provided");
@@ -16,7 +16,9 @@ async function fetchRecipe() {
   }
 
   try {
-    showLoader();
+    if (!isInitial) {
+      showLoader();
+    }
     const response = await fetch(`/api/recipes/${recipeId}`);
     
     if (!response.ok) {
@@ -25,11 +27,15 @@ async function fetchRecipe() {
     
     const recipe = await response.json();
     populateRecipeData(recipe);
-    hideLoader();
+    if (!isInitial) {
+      hideLoader();
+    }
   } catch (error) {
     console.error("Error fetching recipe:", error);
     showError("Failed to load recipe. Please try again later.");
-    hideLoader();
+    if (!isInitial) {
+      hideLoader();
+    }
   }
 }
 
@@ -187,15 +193,11 @@ async function saveRecipe() {
 
 // Helper functions
 function showLoader() {
-  // Create loader if it doesn't exist
-  if ($("#loader").length === 0) {
-    $("body").append('<div id="loader" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(255,255,255,0.8);z-index:9999;text-align:center;padding-top:20%;">Loading...</div>');
-  }
-  $("#loader").show();
+  $("#loader").removeClass("fade-out");
 }
 
 function hideLoader() {
-  $("#loader").hide();
+  $("#loader").addClass("fade-out");
 }
 
 // Apply the user's saved theme preference
@@ -277,6 +279,11 @@ $(document).ready(function () {
   $("#add-section").on("click", addSection);
   $("#noteb").on("click", addNote);
 
-  // Load recipe data
-  fetchRecipe();
+  // Coordinate loading: fetch recipe data and wait for fonts in parallel
+  const recipePromise = fetchRecipe(true);
+  const fontsPromise = document.fonts ? document.fonts.ready : Promise.resolve();
+
+  Promise.all([recipePromise, fontsPromise]).then(function () {
+    hideLoader();
+  });
 });
