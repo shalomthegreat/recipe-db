@@ -16,19 +16,16 @@ html {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-family: "Poppins", sans-serif;
 }
-.back-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--primary-dark);
-  font-weight: 500;
-  text-decoration: none;
+a.back-btn {
+  color: var(--primary-color);
   padding: 0.5rem 1rem;
   border-radius: 6px;
   transition: background-color 0.2s;
 }
-.back-btn:hover {
-  background-color: var(--primary-light);
+.back-btn i {
+  color: var(--primary-color);
+}
+a.back-btn:hover {background-color: #f0f0f0;
 }
 .fstandard {
   font-family: "Raleway", sans-serif;

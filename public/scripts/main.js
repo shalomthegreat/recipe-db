@@ -2,35 +2,46 @@
 var dataSet = [];
 var currentEditRecipe = null;
 var columnsF = [
-  { title: "Title", data: "title" },
-  { title: "Category", data: "category" },
-  { title: "Tags", data: "tags" },
   { title: "Author", data: "author" },
+  { title: "Category", data: "category" },
+  { title: "Title", data: "title" },
+  { title: "Tags", data: "tags" },
   { title: "Actions" }
 ];
 var columnRenderF = [
   {
-    render: function (data, type, full, meta) {
-      return `<a href="/recipe.html?id=${full._id}">${full.title}</a>`;
-    },
-    width: "25%",
+    width: "100px",
     targets: 0
   },
   {
-    width: "50px",
+    width: "70px",
     targets: 1
   },
   {
-    width: "100px",
-    targets: 3
+    render: function (data, type, full, meta) {
+      return `<a class="recipe-link" href="/recipe.html?id=${full._id}">${full.title || ""}</a>`;
+    },
+    width: "25%",
+    targets: 2
   },
   {
     render: function (data, type, full, meta) {
       const recipeId = full._id || "";
       return `
         <div class="action-buttons">
-          <button type="button" class="edit-btn action-btn icon" data-recipe-id="${recipeId}">📝</button>
-          <button type="button" class="delete-btn action-btn icon" data-recipe-id="${recipeId}">🚮</button>
+          <button type="button" class="edit-btn action-btn icon" data-recipe-id="${recipeId}" title="Edit Recipe">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+            </svg>
+          </button>
+          <button type="button" class="delete-btn action-btn icon" data-recipe-id="${recipeId}" title="Delete Recipe">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="3 6 5 6 21 6"></polyline>
+              <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+              <line x1="10" y1="11" x2="10" y2="17"></line>
+              <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+          </button>
         </div>
       `;
     },
