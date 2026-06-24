@@ -24,7 +24,7 @@ recipe-db/
 │   └── recipeController.js
 ├── middleware/           # Express middleware
 ├── models/               # Data access schemas (MongoDB)
-│   └── Recipe.js
+│   └── recipeModel.js
 ├── routes/               # API endpoint definitions
 │   └── recipeRoutes.js
 ├── validation/           # Data validation schemas (Joi/Custom)

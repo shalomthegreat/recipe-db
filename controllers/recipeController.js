@@ -1,5 +1,5 @@
 const { getDB } = require('../config/db');
-const Recipe = require('../models/Recipe');
+const Recipe = require('../models/recipeModel');
 const { validateRecipe } = require('../validation/recipeValidation');
 
 /**
