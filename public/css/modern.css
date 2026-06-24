@@ -50,26 +50,32 @@ body {
   line-height: 1.3;
 }
 
-/* Navigation */
+/* Navigation (mobile-first: stacked) */
 nav {
   display: flex;
+  flex-direction: column;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  gap: 0.75rem;
+  text-align: center;
+  padding: 0.75rem 1rem;
   background-color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .app-title {
-  font-size: 2.2rem;
+  font-size: 1.8rem;
   color: var(--primary-color);
   margin: 0;
 }
 
 .nav-controls {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
 }
 
 /* Theme Switcher */
@@ -108,24 +114,84 @@ nav {
   color: var(--primary-orange);
 }
 
-/* Main Content */
+/* Main Content (mobile-first) */
 main {
-  padding: 2rem;
+  padding: 1rem;
 }
 
 .table-container {
   background: white;
   border-radius: 10px;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
-/* DataTable Customization */
+/* DataTable Customization (mobile-first) */
+/* Allow the table itself to scroll horizontally on small screens
+   so columns are never clipped or squashed on a phone. */
+.dataTables_wrapper {
+  width: 100%;
+}
+
+.dataTables_wrapper .dataTables_scrollHead,
+.dataTables_wrapper .dataTables_scrollBody,
+.table-container > .dataTables_wrapper > div {
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Stack the length + search controls vertically on mobile */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+  float: none;
+  text-align: left;
+  width: 100%;
+}
+
+.dataTables_wrapper .dataTables_filter {
+  margin-top: 0.5rem;
+}
+
+.dataTables_wrapper .dataTables_filter label {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.35rem;
+  width: 100%;
+}
+
 .dataTables_wrapper .dataTables_filter input {
   border: 1px solid #ddd;
   border-radius: 20px;
-  padding: 0.5rem 1rem;
-  margin-left: 0.5rem;
+  padding: 0.6rem 1rem;
+  margin-left: 0;
+  width: 100%;
+  font-size: 16px; /* prevents iOS zoom-on-focus */
+}
+
+.dataTables_wrapper .dataTables_length select {
+  padding: 0.35rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ddd;
+  font-size: 16px;
+}
+
+/* Pagination: wrap and add touch-friendly spacing on mobile */
+.dataTables_wrapper .dataTables_paginate {
+  float: none;
+  text-align: center;
+  padding-top: 0.75rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 0.5rem 0.75rem;
+  min-width: 2.2rem;
+}
+
+.dataTables_wrapper .dataTables_info {
+  padding-top: 0.5rem;
+  text-align: center;
 }
 
 table.dataTable {
@@ -143,11 +209,12 @@ table.dataTable thead th {
   background-color: var(--primary-light);
   color: var(--primary-dark);
   font-weight: 500;
-  padding: 1rem;
+  padding: 0.6rem 0.5rem;
+  white-space: nowrap;
 }
 
 table.dataTable tbody td {
-  padding: 1rem;
+  padding: 0.6rem 0.5rem;
   border-bottom: 1px solid #eee;
 }
 
@@ -183,10 +250,6 @@ table.dataTable tbody tr:hover {
   background: var(--primary-light);
 }
 
-.action-buttons {
-  display: flex;
-  gap: 5px;
-}
 a {
   text-decoration: none;
   color: var(--primary-dark);
@@ -244,32 +307,28 @@ table.dataTable tbody tr td:last-child {
 /* Modal */
 .modal.hideme {
   display: none;
+  align-items: center;
+  justify-content: center;
   position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: rgba(0, 0, 0, 0.5);
   z-index: 1000;
 }
 
+/* Modal content (mobile-first) */
 .modal-content {
   position: relative;
   background: white;
-  padding: 2.5rem;
+  padding: 1.5rem;
   border-radius: 12px;
-  width: 90%;
+  width: 92%;
   max-width: 500px;
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   margin: 0 auto;
-  top: 10%;
+  top: 5%;
   transition: top 0.3s ease-out, opacity 0.3s ease-out;
-}
-
-.modal.hideme {
-  display: none;
-  align-items: center;
-  justify-content: center;
 }
 
 /* Modal Content Styles */
@@ -317,11 +376,16 @@ table.dataTable tbody tr td:last-child {
   box-shadow: 0 0 0 2px var(--primary-light);
 }
 
+/* Button group (mobile-first: full-width stacked) */
 .button-group {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+  flex-direction: column;
+  gap: 0.75rem;
   margin-top: 2rem;
+}
+
+.button-group button {
+  width: 100%;
 }
 
 /* Inline Validation Styles */
@@ -454,37 +518,85 @@ table.dataTable tbody tr td:last-child {
   justify-content: center;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Responsive Design (mobile-first: enhance for tablets and up) */
+@media (min-width: 768px) {
+  /* Navigation: switch to a horizontal bar */
   nav {
-    flex-direction: column;
+    flex-direction: row;
     gap: 1rem;
-    text-align: center;
+    text-align: left;
+    padding: 1rem 2rem;
+  }
+
+  .app-title {
+    font-size: 2.2rem;
   }
 
   .nav-controls {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .modal.hideme.active {
-    align-items: stretch;
-    padding: 1rem;
-  }
-
-  .modal-content {
     width: auto;
-    max-height: calc(100vh - 3rem);
-    overflow-y: auto;
-    border-radius: 8px;
+    flex-wrap: nowrap;
+    gap: 1rem;
+  }
+
+  /* Roomier layout */
+  main {
+    padding: 2rem;
+  }
+
+  .table-container {
     padding: 1.5rem;
   }
 
+  table.dataTable thead th,
+  table.dataTable tbody td {
+    padding: 1rem;
+  }
+
+  /* Restore inline DataTables controls on larger screens */
+  .dataTables_wrapper .dataTables_length {
+    float: left;
+    width: auto;
+  }
+
+  .dataTables_wrapper .dataTables_filter {
+    float: right;
+    width: auto;
+    margin-top: 0;
+  }
+
+  .dataTables_wrapper .dataTables_filter label {
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+  }
+
+  .dataTables_wrapper .dataTables_filter input {
+    width: auto;
+    margin-left: 0.5rem;
+  }
+
+  .dataTables_wrapper .dataTables_paginate {
+    float: right;
+    text-align: right;
+  }
+
+  .dataTables_wrapper .dataTables_info {
+    text-align: left;
+  }
+
+  /* Modal + form controls */
+  .modal-content {
+    padding: 2.5rem;
+    top: 10%;
+  }
+
   .button-group {
-    flex-direction: column;
+    flex-direction: row;
+    justify-content: flex-end;
+    gap: 1rem;
   }
 
   .button-group button {
-    width: 100%;
+    width: auto;
   }
 }

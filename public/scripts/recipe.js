@@ -114,7 +114,7 @@ function populateRecipeData(recipe) {
   $("#credits").text(recipe.credit || "Inspiration: [e.g. that one blog post]");
   
   // Set author
-  $("span.edit.wider").text(recipe.author || "");
+  $("#author").text(recipe.author || "");
 }
 
 // Save recipe changes
@@ -131,7 +131,7 @@ async function saveRecipe() {
     cook: $("#bake").text().trim(),
     total: $("#total").text().trim(),
     yield: $("#yield").text().trim(),
-    author: $("span.edit.wider").text().trim(),
+    author: $("#author").text().trim(),
     credit: $("#credits").text().trim()
   };
   
@@ -198,13 +198,85 @@ function hideLoader() {
   $("#loader").hide();
 }
 
+// Apply the user's saved theme preference
+function applySavedTheme() {
+  const savedTheme = localStorage.getItem("preferred-theme");
+  if (savedTheme) {
+    document.body.className = `theme-${savedTheme}`;
+  }
+}
+
+// Set up inline editing handlers
+function initInlineEditing() {
+  // Multi-line fields: click text to reveal its textarea, blur to re-render
+  $(document)
+    .on("click", ".set button, .text", function () {
+      $(this).siblings(".field").show().focus();
+      $(this).parent().children("button, .text").hide();
+    })
+    .on("blur", "textarea", function () {
+      $(this).hide();
+      const lines = $(this).val().split("\n");
+      const isOL = $(this).siblings("ol").is(":hidden");
+      let html = "";
+      lines.forEach(function (line) {
+        html += isOL ? `<li>${line}</li>` : `<p>${line}</p>`;
+      });
+      $(this).prev(".text").html(html).show();
+    });
+
+  // Single-line fields: click wraps content in a textarea, blur writes it back
+  $("body")
+    .on("click", ".edit", function () {
+      if ($(this).find("textarea").length < 1) {
+        $(this).wrapInner("<textarea/>").find("textarea").focus();
+      }
+    })
+    .on("blur", ".edit textarea", function () {
+      $(this).parent().text(this.value);
+    });
+}
+
+// Add a new ingredient section (confirm first if there are already several)
+function addSection() {
+  if ($("#items .mtitle").length >= 4) {
+    showConfirmDialog("Are you sure you want to add another section?", appendSection);
+    return;
+  }
+  appendSection();
+}
+
+function appendSection() {
+  $("#items").append(`
+    <p class="mtitle edit" style="margin-top:25px;">Seasonings</p>
+    <div class="set">
+      <div class="text"></div>
+      <textarea class="field">1 tsp Salt</textarea>
+      <button class="secondary">ingredients</button>
+    </div>`);
+}
+
+// Toggle the optional note callout under the instructions
+function addNote() {
+  $("#note").toggle();
+}
+
 // Initialize on document ready
-$(document).ready(function() {
-  // Override the presave function
-  window.presave = function() {
-    saveRecipe();
-  };
-  
+$(document).ready(function () {
+  applySavedTheme();
+  initInlineEditing();
+
+  // Action buttons
+  $("#save").on("click", saveRecipe);
+  $("#print").on("click", function (e) {
+    e.preventDefault();
+    window.print();
+  });
+
+  // Ingredient section / note controls
+  $("#add-section").on("click", addSection);
+  $("#noteb").on("click", addNote);
+
   // Load recipe data
   fetchRecipe();
 });
