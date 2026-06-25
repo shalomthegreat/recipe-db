@@ -2,6 +2,10 @@
 
 A beautiful, light-weight, self-hosted web application for organizing, sharing, and preserving **your family's treasured recipes**. Built with a fast, modern `express.js` API and connected to `MongoDB`, this application combines developer-friendly simplicity with an elegant, responsive frontend interface.
 
+<img width="2252" height="1330" alt="main-page-example" src="https://github.com/user-attachments/assets/88d04dc5-b86b-42ce-b77c-40743ea40779" />
+<img width="2248" height="1486" alt="recipe-page-example" src="https://github.com/user-attachments/assets/f0ed6f13-ae39-47ea-9d02-3d2578a5c788" />
+
+
 ## ✨ Features
 
 Whether you are looking to retire that grease-stained paper binder or build a private family portal that can be accessed anywhere, the **Family Recipe Box** is designed for the modern era:
@@ -12,7 +16,9 @@ Whether you are looking to retire that grease-stained paper binder or build a pr
 - **⚡ Supercharged Search and Filters:** Powered by jQuery DataTables, you can search and filter through hundreds of recipes instantly by title, author, category, or tags.
 - **📱 Fully Responsive Design:** Optimized for mobile phones, tablets, and desktops alike, so you can keep it open on your phone or tablet on the kitchen counter while cooking
 - **🖨️ Printer Friendly by Design:** Print beautiful copies of your recipes, for easy reference, quick sharing, and even for updating that one notebook that no one else can read expect Mom.
-- **🔧 Clean RESTful API Backend:** Cleanly structured, modular MVC architecture that allows developers to easily extend the database, export JSON, or integrate into home dashboard networks (like Home Assistant).
+
+  <img width="200" height="auto" alt="print-page-example" src="https://github.com/user-attachments/assets/cea8b26e-76b1-4e65-8d7f-545d21c5ba57" /><br />
+  Example: Formatted for Print
 
 ## 🛠️ Project Structure
 
