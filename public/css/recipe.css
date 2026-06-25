@@ -157,6 +157,13 @@ textarea:focus {
   font-family: "Poppins", sans-serif;
   word-break: break-word;
 }
+/* A recipe with no saved credit shows the hint text below in a muted style so
+   the user can see the field exists. The hint is stripped on save (see
+   recipe.js) so it is never persisted as real recipe data. */
+#credits.is-placeholder {
+  color: #bbb;
+  font-style: italic;
+}
 #credit {
   display: flex;
   justify-content: flex-end;
