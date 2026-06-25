@@ -157,6 +157,10 @@ textarea:focus {
   font-family: "Poppins", sans-serif;
   word-break: break-word;
 }
+#credits.is-placeholder {
+  color: #bbb;
+  font-style: italic;
+}
 #credit {
   display: flex;
   justify-content: flex-end;

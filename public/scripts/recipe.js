@@ -116,11 +116,24 @@ function populateRecipeData(recipe) {
     $("#note").hide();
   }
   
-  // Set credits
-  $("#credits").text(recipe.credit || "Inspiration: [e.g. that one blog post]");
+  const $credits = $("#credits");
+  if (recipe.credit) {
+    $credits.text(recipe.credit).removeClass("is-placeholder");
+    $credits.siblings(".field").val(recipe.credit);
+  } else {
+    $credits.text($credits.attr("data-placeholder")).addClass("is-placeholder");
+    $credits.siblings(".field").val("");
+  }
   
   // Set author
   $("#author").text(recipe.author || "");
+}
+
+function getCreditValue() {
+  const $credits = $("#credits");
+  if ($credits.hasClass("is-placeholder")) return "";
+  const value = $credits.text().trim();
+  return value === $credits.attr("data-placeholder") ? "" : value;
 }
 
 // Save recipe changes
@@ -138,7 +151,7 @@ async function saveRecipe() {
     total: $("#total").text().trim(),
     yield: $("#yield").text().trim(),
     author: $("#author").text().trim(),
-    credit: $("#credits").text().trim()
+    credit: getCreditValue()
   };
   
   // Collect ingredients by section
@@ -213,18 +226,26 @@ function initInlineEditing() {
   // Multi-line fields: click text to reveal its textarea, blur to re-render
   $(document)
     .on("click", ".set button, .text", function () {
+      if (this.id === "credits" && $(this).hasClass("is-placeholder")) {
+        $(this).removeClass("is-placeholder").siblings(".field").val("");
+      }
       $(this).siblings(".field").show().focus();
       $(this).parent().children("button, .text").hide();
     })
     .on("blur", "textarea", function () {
       $(this).hide();
+      const $text = $(this).prev(".text");
+      if ($text.attr("id") === "credits" && $(this).val().trim() === "") {
+        $text.text($text.attr("data-placeholder")).addClass("is-placeholder").show();
+        return;
+      }
       const lines = $(this).val().split("\n");
       const isOL = $(this).siblings("ol").is(":hidden");
       let html = "";
       lines.forEach(function (line) {
         html += isOL ? `<li>${line}</li>` : `<p>${line}</p>`;
       });
-      $(this).prev(".text").html(html).show();
+      $text.html(html).show();
     });
 
   // Single-line fields: click wraps content in a textarea, blur writes it back
