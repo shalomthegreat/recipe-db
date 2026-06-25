@@ -341,6 +341,7 @@ $(document).ready(async function () {
   $("#onboard-next").on("click", function () { goToStep(onboardStep + 1); });
   $("#onboard-back").on("click", function () { goToStep(onboardStep - 1); });
   $("#onboard-finish").on("click", finishOnboarding);
+  $("#onboard-cancel").on("click", function () { $("#welcome").fadeOut(); });
 
   // Create new recipe
   $("#addb").click(async function () {
@@ -456,6 +457,9 @@ function goToStep(step) {
     this.hidden = Number($(this).data("step")) !== step;
   });
   if (step === ONBOARD_LAST) renderTransferStep();
+  // Cancel is only offered once setup has been completed before (i.e. opened via
+  // the Storage button); a first-time user must make a choice.
+  $("#onboard-cancel").prop("hidden", !Storage.hasChosenMode());
   $("#onboard-back").prop("hidden", step === 1);
   $("#onboard-next").prop("hidden", step === ONBOARD_LAST);
   $("#onboard-finish").prop("hidden", step !== ONBOARD_LAST);
@@ -499,7 +503,7 @@ function renderTransferStep() {
     html =
       `<p class="subtitle">You're keeping recipes in your browser.</p>` +
       '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="none" checked />' +
-      "<span>Start fresh in your browser</span></label>" +
+      "<span>Keep only what's already in your browser</span></label>" +
       '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="copy" />' +
       `<span>Copy the ${mongoN} recipe${mongoN === 1 ? "" : "s"} from the local MongoDB into your browser</span></label>` +
       (browserN > 0
@@ -510,7 +514,7 @@ function renderTransferStep() {
     html =
       `<p class="subtitle">You're keeping recipes in the local MongoDB.</p>` +
       '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="none" checked />' +
-      "<span>Leave the MongoDB as it is</span></label>" +
+      "<span>Keep only what's already in the local MongoDB</span></label>" +
       '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="copy" />' +
       `<span>Copy the ${browserN} recipe${browserN === 1 ? "" : "s"} from your browser into the local MongoDB</span></label>` +
       (mongoN > 0
@@ -539,8 +543,12 @@ async function finishOnboarding() {
     const copied = await Storage.migrateRemoteToLocal();
     showSuccess(`Copied ${copied} recipe${copied === 1 ? "" : "s"} from the local MongoDB to your browser.`);
   } else if (transfer === "copy" && chosen === "remote") {
-    const pushed = await Storage.migrateLocalToRemote();
-    showSuccess(`Copied ${pushed} recipe${pushed === 1 ? "" : "s"} from your browser to the local MongoDB.`);
+    const res = await Storage.migrateLocalToRemote();
+    if (res.failed > 0) {
+      showSuccess(`Copied ${res.copied} recipe${res.copied === 1 ? "" : "s"} to the local MongoDB; ${res.failed} could not be saved.`);
+    } else {
+      showSuccess(`Copied ${res.copied} recipe${res.copied === 1 ? "" : "s"} from your browser to the local MongoDB.`);
+    }
   }
 
   $("#welcome").fadeOut();
@@ -549,13 +557,27 @@ async function finishOnboarding() {
 
 async function exportRecipes() {
   try {
-    const recipes = (await Storage.getAll()).map(function (r) {
+    const recipes = (await Storage.exportAll()).map(function (r) {
       const clean = Object.assign({}, r);
       delete clean._id;
       return clean;
     });
-    const blob = new Blob([JSON.stringify(recipes, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
+    const json = JSON.stringify(recipes, null, 2);
+    const file = new File([json], "recipes.json", { type: "application/json" });
+
+    // On phones, use the native share sheet (AirDrop / Messages / Save to Files)
+    // when the browser can share a file; otherwise fall back to a download.
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: "My Recipes" });
+        return;
+      } catch (shareErr) {
+        if (shareErr && shareErr.name === "AbortError") return; // user dismissed the sheet
+        // otherwise fall through to the download path
+      }
+    }
+
+    const url = URL.createObjectURL(file);
     const a = document.createElement("a");
     a.href = url;
     a.download = "recipes.json";
@@ -578,19 +600,47 @@ async function loadRecipesFromFile(event) {
     const text = await file.text();
     const parsed = JSON.parse(text);
     const recipes = Array.isArray(parsed) ? parsed : [parsed];
-    let added = 0;
-    for (const recipe of recipes) {
-      const payload = Object.assign({}, recipe);
-      delete payload._id;
-      const created = await Storage.create(payload);
-      if (created) added++;
-    }
-    showSuccess(`Loaded ${added} recipe${added === 1 ? "" : "s"}.`);
+    const result = await Storage.importRecipes(recipes, askImportConflict);
+    const parts = [];
+    if (result.added) parts.push(`${result.added} added`);
+    if (result.updated) parts.push(`${result.updated} updated`);
+    if (result.skipped) parts.push(`${result.skipped} skipped`);
+    if (result.invalid) parts.push(`${result.invalid} not valid recipes`);
+    if (result.failed) parts.push(`${result.failed} could not be saved`);
+    showSuccess(`Import complete — ${parts.join(", ") || "nothing to import"}.`);
     fetchRecipes(true);
   } catch (error) {
     console.error("Error loading recipes:", error);
     showError("Couldn't load that file — make sure it's a recipes JSON export.");
   }
+}
+
+function askImportConflict(incoming, existing) {
+  return new Promise(function (resolve) {
+    const modal = document.getElementById("import-conflict");
+    modal.querySelector(".conflict-message").textContent =
+      `"${incoming.title || "Untitled"}" already exists with different details. What should we do?`;
+    document.getElementById("conflict-applyall").checked = false;
+    $(modal).css({ opacity: 0, top: "-20px" }).show().animate({ opacity: 1, top: "0px" }, 200);
+
+    function choose(action) {
+      const applyAll = document.getElementById("conflict-applyall").checked;
+      cleanup();
+      $(modal).fadeOut();
+      resolve({ action: action, applyAll: applyAll });
+    }
+    function onUpdate() { choose("update"); }
+    function onAdd() { choose("add"); }
+    function onSkip() { choose("skip"); }
+    function cleanup() {
+      document.getElementById("conflict-update").removeEventListener("click", onUpdate);
+      document.getElementById("conflict-add").removeEventListener("click", onAdd);
+      document.getElementById("conflict-skip").removeEventListener("click", onSkip);
+    }
+    document.getElementById("conflict-update").addEventListener("click", onUpdate);
+    document.getElementById("conflict-add").addEventListener("click", onAdd);
+    document.getElementById("conflict-skip").addEventListener("click", onSkip);
+  });
 }
 
 // Function to bind row clicks for navigation to recipe detail page

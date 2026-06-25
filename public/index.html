@@ -151,15 +151,18 @@
           </section>
 
           <div class="onboard-nav">
-            <button id="onboard-back" class="secondary-btn" hidden>Back</button>
-            <button id="onboard-next" class="primary-btn">Next</button>
-            <button id="onboard-finish" class="primary-btn" hidden>Got it!</button>
+            <div class="onboard-nav-right">
+              <button id="onboard-back" class="secondary-btn" hidden>Back</button>
+              <button id="onboard-next" class="primary-btn">Next</button>
+              <button id="onboard-finish" class="primary-btn" hidden>Got it!</button>
+            </div>
           </div>
 
           <div class="onboard-tools">
             <p class="onboard-tools-label">Move recipes between devices:</p>
             <button id="exportb" class="secondary-btn"><i class="fas fa-file-export"></i> Export</button>
             <button id="loadb" class="secondary-btn"><i class="fas fa-file-import"></i> Load Data</button>
+            <button id="onboard-cancel" class="secondary-btn onboard-cancel" hidden>Cancel</button>
           </div>
         </div>
       </div>
@@ -216,6 +219,23 @@
         <div class="confirm-buttons">
           <button type="button" id="confirm-no" class="secondary-btn">Cancel</button>
           <button type="button" id="confirm-yes" class="primary-btn">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Import Conflict Modal -->
+    <div class="modal hideme" id="import-conflict">
+      <div class="modal-content confirm-content">
+        <h2 class="handwritten">Recipe already exists</h2>
+        <p class="conflict-message">A recipe with the same id but different details is being imported.</p>
+        <label class="conflict-all">
+          <input type="checkbox" id="conflict-applyall" />
+          <span>Do this for all remaining conflicts</span>
+        </label>
+        <div class="confirm-buttons">
+          <button type="button" id="conflict-skip" class="secondary-btn">Skip</button>
+          <button type="button" id="conflict-add" class="secondary-btn">Add as new</button>
+          <button type="button" id="conflict-update" class="primary-btn">Update existing</button>
         </div>
       </div>
     </div>

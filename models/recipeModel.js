@@ -75,14 +75,19 @@ async function getAllRecipes(db, filter = {}, options = {}) {
  */
 async function getRecipeById(db, id) {
   const { COLLECTIONS } = require('../config/db');
-  
+  const collection = db.collection(COLLECTIONS.RECIPES);
+
   try {
     const objectId = new ObjectId(id);
-    return db.collection(COLLECTIONS.RECIPES).findOne({ _id: objectId });
+    const byObjectId = await collection.findOne({ _id: objectId });
+    if (byObjectId) return byObjectId;
   } catch (error) {
-    console.error('Invalid ID format:', error);
-    return null;
+    // id isn't a valid ObjectId (e.g. a uuid) — fall through to other lookups.
   }
+
+  // Fall back to a string _id or a uid match, so recipes that originated in the
+  // browser (uuid ids) still resolve.
+  return collection.findOne({ $or: [{ _id: id }, { uid: id }] });
 }
 
 /**

@@ -636,6 +636,22 @@ table.dataTable tbody tr td:last-child {
   cursor: default;
 }
 
+.conflict-all {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  margin: 0.75rem 0;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.conflict-all input {
+  accent-color: var(--primary-color);
+  width: 15px;
+  height: 15px;
+}
+
 .storage-disabled a {
   color: var(--primary-color);
   text-decoration: underline;
@@ -644,13 +660,16 @@ table.dataTable tbody tr td:last-child {
 
 .onboard-nav {
   display: flex;
-  justify-content: space-between;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 0.5rem;
   margin-top: 1.5rem;
 }
 
-.onboard-nav .primary-btn {
+/* Standard wizard footer: Cancel far left, the Back/Next pair grouped right. */
+.onboard-nav-right {
   margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
 }
 
 .onboard-transfer-opt {
@@ -685,6 +704,24 @@ table.dataTable tbody tr td:last-child {
   margin: 0 0 0.25rem;
   font-size: 0.8rem;
   color: var(--primary-dark);
+}
+
+.onboard-cancel {
+  margin-left: auto;
+}
+
+/* Keep every button in the tools row the same height and baseline, whether or
+   not it has an icon (the glyph otherwise makes Export/Load taller than Cancel). */
+.onboard-tools .secondary-btn:not([hidden]) {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  line-height: 1.2;
+}
+
+.onboard-tools .secondary-btn i {
+  font-size: 0.95em;
+  line-height: 1;
 }
 
 /* Notification System */
