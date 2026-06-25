@@ -57,6 +57,61 @@ button.primary {
   background: var(--primary-color);
   color: white;
 }
+button.primary:disabled,
+button.primary.autosaving {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.autosave {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  vertical-align: middle;
+  margin-right: 10px;
+  font-size: 0.8rem;
+  user-select: none;
+}
+.autosave input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.autosave-track {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  background: #ccc;
+  border-radius: 9px;
+  transition: background 0.2s ease;
+  flex: none;
+}
+.autosave-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s ease;
+}
+.autosave input:checked + .autosave-track {
+  background: var(--primary-color);
+}
+.autosave input:checked + .autosave-track .autosave-thumb {
+  transform: translateX(16px);
+}
+.autosave input:focus-visible + .autosave-track {
+  outline: 2px solid var(--primary-dark);
+  outline-offset: 2px;
+}
+.autosave-label {
+  color: var(--primary-dark);
+}
 hr {
   margin: 2.5rem 0;
   border-color: var(--primary-dark);

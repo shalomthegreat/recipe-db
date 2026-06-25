@@ -129,6 +129,30 @@ function populateRecipeData(recipe) {
   $("#author").text(recipe.author || "");
 }
 
+const AUTOSAVE_KEY = "autoSaveOn";
+
+function isAutoSaveOn() {
+  return $("#autosave").is(":checked");
+}
+
+function applySavedAutoSave() {
+  $("#autosave").prop("checked", localStorage.getItem(AUTOSAVE_KEY) === "on");
+}
+
+function updateSaveButton() {
+  const $save = $("#save");
+  if (isAutoSaveOn()) {
+    $save.prop("disabled", true).addClass("autosaving").text("Autosaving");
+  } else {
+    $save.prop("disabled", false).removeClass("autosaving").text("Save");
+  }
+}
+
+function autoSave() {
+  if (!isAutoSaveOn()) return;
+  saveRecipe({ auto: true });
+}
+
 function getCreditValue() {
   const $credits = $("#credits");
   if ($credits.hasClass("is-placeholder")) return "";
@@ -137,7 +161,8 @@ function getCreditValue() {
 }
 
 // Save recipe changes
-async function saveRecipe() {
+async function saveRecipe(options = {}) {
+  const isAuto = options.auto === true;
   if (!recipeId) {
     showError("No recipe ID available");
     return;
@@ -181,7 +206,7 @@ async function saveRecipe() {
   }
   
   try {
-    showLoader();
+    if (!isAuto) showLoader();
     const response = await fetch(`/api/recipes/${recipeId}`, {
       method: "PUT",
       headers: {
@@ -189,18 +214,18 @@ async function saveRecipe() {
       },
       body: JSON.stringify(recipeData)
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json();
       throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
     }
-    
-    hideLoader();
-    showSuccess("Recipe saved successfully!");
+
+    if (!isAuto) hideLoader();
+    showSuccess(isAuto ? "Auto-saved" : "Recipe saved successfully!");
   } catch (error) {
     console.error("Error saving recipe:", error);
     showError("Failed to save recipe. Please try again later.");
-    hideLoader();
+    if (!isAuto) hideLoader();
   }
 }
 
@@ -237,6 +262,7 @@ function initInlineEditing() {
       const $text = $(this).prev(".text");
       if ($text.attr("id") === "credits" && $(this).val().trim() === "") {
         $text.text($text.attr("data-placeholder")).addClass("is-placeholder").show();
+        autoSave();
         return;
       }
       const lines = $(this).val().split("\n");
@@ -246,6 +272,7 @@ function initInlineEditing() {
         html += isOL ? `<li>${line}</li>` : `<p>${line}</p>`;
       });
       $text.html(html).show();
+      autoSave();
     });
 
   // Single-line fields: click wraps content in a textarea, blur writes it back
@@ -257,6 +284,7 @@ function initInlineEditing() {
     })
     .on("blur", ".edit textarea", function () {
       $(this).parent().text(this.value);
+      autoSave();
     });
 }
 
@@ -290,7 +318,16 @@ $(document).ready(function () {
   initInlineEditing();
 
   // Action buttons
-  $("#save").on("click", saveRecipe);
+  $("#save").on("click", function () {
+    saveRecipe();
+  });
+
+  applySavedAutoSave();
+  $("#autosave").on("change", function () {
+    localStorage.setItem(AUTOSAVE_KEY, isAutoSaveOn() ? "on" : "off");
+    updateSaveButton();
+  });
+  updateSaveButton();
   $("#print").on("click", function (e) {
     e.preventDefault();
     window.print();
