@@ -19,13 +19,7 @@ async function fetchRecipe(isInitial = false) {
     if (!isInitial) {
       showLoader();
     }
-    const response = await fetch(`/api/recipes/${recipeId}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    
-    const recipe = await response.json();
+    const recipe = await Storage.getById(recipeId);
     populateRecipeData(recipe);
     if (!isInitial) {
       hideLoader();
@@ -182,19 +176,7 @@ async function saveRecipe() {
   
   try {
     showLoader();
-    const response = await fetch(`/api/recipes/${recipeId}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(recipeData)
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
-    }
-    
+    await Storage.update(recipeId, recipeData);
     hideLoader();
     showSuccess("Recipe saved successfully!");
   } catch (error) {

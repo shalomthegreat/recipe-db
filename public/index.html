@@ -65,6 +65,7 @@
     <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
     <script src="https://cdn.datatables.net/1.10.20/js/jquery.dataTables.min.js"></script>
     <script src="scripts/notifications.js"></script>
+    <script src="scripts/storage.js"></script>
     <script type="module" src="scripts/main.js"></script>
   </head>
   <body>
@@ -94,6 +95,8 @@
             <i class="fas fa-circle"></i>
           </button>
         </div>
+        <button id="storageb" class="secondary-btn"><i class="fas fa-database"></i> Storage</button>
+        <input type="file" id="loadfile" accept="application/json,.json" hidden />
         <button id="newb" class="primary-btn"><i class="fas fa-plus"></i> New Recipe</button>
       </div>
     </nav>
@@ -109,30 +112,55 @@
       <div class="modal-content">
         <h2 class="handwritten">Welcome to Recipe Database</h2>
         <div class="modal-body">
-          <p class="subtitle">A little background before we begin:</p>
-          <ul>
-            <li>
-              <i class="fas fa-lock"></i>
-              Your data is completely private since it is not saved to any servers.
-            </li>
-            <li>
-              <i class="fas fa-database"></i>
-              Data is saved locally in your browser and persists between sessions.
-            </li>
-            <li>
-              <i class="fas fa-info-circle"></i>
-              Each device maintains its own separate database.
-            </li>
-            <li>
-              <i class="fas fa-mobile-alt"></i>
-              Start your log on your primary device (e.g., your phone).
-            </li>
-            <li>
-              <i class="fas fa-file-export"></i>
-              Use Export and Load-Data features to transfer between devices.
-            </li>
-          </ul>
-          <button id="okb" class="primary-btn">Got it!</button>
+
+          <section class="onboard-step" data-step="1">
+            <p class="subtitle">A little background before we begin:</p>
+            <ul>
+              <li>
+                <i class="fas fa-lock"></i>
+                Your data is completely private since it is not saved to any remote servers.
+              </li>
+              <li>
+                <i class="fas fa-database"></i>
+                Data is saved locally in your browser or a local MongoDB and persists between sessions.
+              </li>
+              <li>
+                <i class="fas fa-mobile-alt"></i>
+                <span>Start your recipe log on your primary device (<em>e.g.,</em> your desktop or phone).</span>
+              </li>
+              <li>
+                <i class="fas fa-info-circle"></i>
+                Each device maintains its own separate database (unless you sync them).
+              </li>
+              <li>
+                <i class="fas fa-file-export"></i>
+                Use Export and Load-Data features to transfer between devices.
+              </li>
+            </ul>
+          </section>
+
+          <section class="onboard-step" data-step="2" hidden>
+            <fieldset id="storage-choice" class="storage-choice">
+              <legend>Where should your recipes be stored?</legend>
+              <div id="storage-options"></div>
+            </fieldset>
+          </section>
+
+          <section class="onboard-step" data-step="3" hidden>
+            <div id="onboard-transfer"></div>
+          </section>
+
+          <div class="onboard-nav">
+            <button id="onboard-back" class="secondary-btn" hidden>Back</button>
+            <button id="onboard-next" class="primary-btn">Next</button>
+            <button id="onboard-finish" class="primary-btn" hidden>Got it!</button>
+          </div>
+
+          <div class="onboard-tools">
+            <p class="onboard-tools-label">Move recipes between devices:</p>
+            <button id="exportb" class="secondary-btn"><i class="fas fa-file-export"></i> Export</button>
+            <button id="loadb" class="secondary-btn"><i class="fas fa-file-import"></i> Load Data</button>
+          </div>
         </div>
       </div>
     </div>
