@@ -116,10 +116,6 @@ function populateRecipeData(recipe) {
     $("#note").hide();
   }
   
-  // Set credits. When a credit is saved, show it (and load it into the editor so
-  // editing reveals the saved text). When none is saved, show the muted hint as a
-  // placeholder so the user sees the field; the hint is never persisted (see
-  // getCreditValue), and the editor is left empty so its own placeholder shows.
   const $credits = $("#credits");
   if (recipe.credit) {
     $credits.text(recipe.credit).removeClass("is-placeholder");
@@ -133,7 +129,6 @@ function populateRecipeData(recipe) {
   $("#author").text(recipe.author || "");
 }
 
-// Read the real credit value, treating the unedited placeholder hint as empty.
 function getCreditValue() {
   const $credits = $("#credits");
   if ($credits.hasClass("is-placeholder")) return "";
@@ -156,8 +151,6 @@ async function saveRecipe() {
     total: $("#total").text().trim(),
     yield: $("#yield").text().trim(),
     author: $("#author").text().trim(),
-    // Don't persist the placeholder hint — save an empty string when the
-    // credits field still shows the unedited placeholder text.
     credit: getCreditValue()
   };
   
@@ -233,7 +226,6 @@ function initInlineEditing() {
   // Multi-line fields: click text to reveal its textarea, blur to re-render
   $(document)
     .on("click", ".set button, .text", function () {
-      // Don't carry the placeholder hint into the editor for the credits field.
       if (this.id === "credits" && $(this).hasClass("is-placeholder")) {
         $(this).removeClass("is-placeholder").siblings(".field").val("");
       }
@@ -243,8 +235,6 @@ function initInlineEditing() {
     .on("blur", "textarea", function () {
       $(this).hide();
       const $text = $(this).prev(".text");
-      // Credits: when left empty, restore the muted placeholder hint instead of
-      // rendering an empty line (the hint is never saved — see getCreditValue).
       if ($text.attr("id") === "credits" && $(this).val().trim() === "") {
         $text.text($text.attr("data-placeholder")).addClass("is-placeholder").show();
         return;
