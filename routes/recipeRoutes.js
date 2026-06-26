@@ -14,6 +14,9 @@ router.post('/', recipeController.createRecipe);
 // PUT update recipe
 router.put('/:id', recipeController.updateRecipe);
 
+// PATCH update recipe fields partially
+router.patch('/:id', recipeController.patchRecipe);
+
 // DELETE recipe
 router.delete('/:id', recipeController.deleteRecipe);
 

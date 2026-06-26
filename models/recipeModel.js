@@ -99,17 +99,24 @@ async function getRecipeById(db, id) {
  */
 async function updateRecipe(db, id, updateData) {
   const { COLLECTIONS } = require('../config/db');
-  
+
   try {
-    const objectId = new ObjectId(id);
-    
     const updatedRecipe = {
       ...updateData,
       updatedAt: new Date()
     };
-    
+
+    // Match by ObjectId when valid, otherwise fall back to a string _id or uid
+    // so recipes that originated in the browser (uuid ids) still resolve.
+    const orConditions = [{ _id: id }, { uid: id }];
+    try {
+      orConditions.unshift({ _id: new ObjectId(id) });
+    } catch (error) {
+      // id isn't a valid ObjectId — rely on the string/uid conditions.
+    }
+
     const result = await db.collection(COLLECTIONS.RECIPES).findOneAndUpdate(
-      { _id: objectId },
+      { $or: orConditions },
       { $set: updatedRecipe },
       { returnDocument: 'after' }
     );
@@ -129,10 +136,18 @@ async function updateRecipe(db, id, updateData) {
  */
 async function deleteRecipe(db, id) {
   const { COLLECTIONS } = require('../config/db');
-  
+
   try {
-    const objectId = new ObjectId(id);
-    const result = await db.collection(COLLECTIONS.RECIPES).deleteOne({ _id: objectId });
+    // Match by ObjectId when valid, otherwise fall back to a string _id or uid
+    // so recipes that originated in the browser (uuid ids) still resolve.
+    const orConditions = [{ _id: id }, { uid: id }];
+    try {
+      orConditions.unshift({ _id: new ObjectId(id) });
+    } catch (error) {
+      // id isn't a valid ObjectId — rely on the string/uid conditions.
+    }
+
+    const result = await db.collection(COLLECTIONS.RECIPES).deleteOne({ $or: orConditions });
     return result.deletedCount > 0;
   } catch (error) {
     console.error('Error deleting recipe:', error);

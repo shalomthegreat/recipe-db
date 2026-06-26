@@ -1,6 +1,6 @@
 const { getDB } = require('../config/db');
 const Recipe = require('../models/recipeModel');
-const { validateRecipe } = require('../validation/recipeValidation');
+const { validateRecipe, validatePatchRecipe } = require('../validation/recipeValidation');
 
 /**
  * Get all recipes
@@ -135,6 +135,47 @@ async function updateRecipe(req, res) {
 }
 
 /**
+ * Patch recipe (partial update)
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ */
+async function patchRecipe(req, res) {
+  try {
+    const { id } = req.params;
+    const patchData = req.body;
+    
+    // Basic validation
+    if (Object.keys(patchData).length === 0) {
+      return res.status(400).json({ error: 'No update data provided' });
+    }
+    
+    // Validate partial recipe data
+    const validation = validatePatchRecipe(patchData);
+    if (!validation.isValid) {
+      return res.status(400).json({ errors: validation.errors });
+    }
+    
+    const db = getDB();
+    
+    // Check if recipe exists before updating
+    const existingRecipe = await Recipe.getRecipeById(db, id);
+    if (!existingRecipe) {
+      return res.status(404).json({ error: 'Recipe not found' });
+    }
+    
+    const updatedRecipe = await Recipe.updateRecipe(db, id, patchData);
+    if (!updatedRecipe) {
+      return res.status(500).json({ error: 'Error updating recipe' });
+    }
+    
+    res.json(updatedRecipe);
+  } catch (error) {
+    console.error('Error patching recipe:', error);
+    res.status(500).json({ error: 'Error patching recipe' });
+  }
+}
+
+/**
  * Delete recipe
  * @param {Object} req - Express request object
  * @param {Object} res - Express response object
@@ -163,5 +204,6 @@ module.exports = {
   getRecipeById,
   createRecipe,
   updateRecipe,
+  patchRecipe,
   deleteRecipe
 };
