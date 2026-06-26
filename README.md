@@ -165,7 +165,8 @@ docker logs local-recipe-mongo
 | `GET`    | `/api/recipes`     | Retrieve all recipes (paginated)   |
 | `GET`    | `/api/recipes/:id` | Retrieve a single recipe by its ID |
 | `POST`   | `/api/recipes`     | Create a new recipe                |
-| `PUT`    | `/api/recipes/:id` | Update an existing recipe          |
+| `PUT`    | `/api/recipes/:id` | Update an existing recipe (full)   |
+| `PATCH`  | `/api/recipes/:id` | Partially update a recipe's fields |
 | `DELETE` | `/api/recipes/:id` | Delete a recipe                    |
 
 ### Query Parameters for `GET /api/recipes`
