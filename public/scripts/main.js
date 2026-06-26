@@ -92,7 +92,8 @@ function init() {
     console.error("An error occurred during DataTable initialization:", error);
   }
 
-  if ($(".dataTables_empty").length == 1) {
+  if ($(".dataTables_empty").length == 1 && !Storage.hasChosenMode()) {
+    goToStep(1);
     $("#welcome").css({ opacity: 0, top: "-20px" }).show().animate({ opacity: 1, top: "0px" }, 200);
   }
 }
@@ -171,13 +172,7 @@ function validateForm() {
 async function fetchRecipes(silent = false) {
   try {
     if (!silent) showLoader();
-    const response = await fetch("/api/recipes");
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const recipes = await response.json();
+    const recipes = await Storage.getAll();
     dataSet = recipes;
     init();
     if (!silent) hideLoader();
@@ -190,13 +185,7 @@ async function fetchRecipes(silent = false) {
 
 async function fetchRecipeById(id) {
   try {
-    const response = await fetch(`/api/recipes/${id}`);
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
-    const recipe = await response.json();
+    const recipe = await Storage.getById(id);
     return recipe;
   } catch (error) {
     console.error(`Error fetching recipe ${id}:`, error);
@@ -207,31 +196,7 @@ async function fetchRecipeById(id) {
 
 async function createRecipe(recipeData) {
   try {
-    const response = await fetch("/api/recipes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(recipeData)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      let errorMessage = errorData.error || `HTTP error! Status: ${response.status}`;
-
-      // Check for detailed validation errors
-      if (errorData.details) {
-        errorMessage +=
-          ": " +
-          Object.entries(errorData.details)
-            .map(([field, msg]) => `${field} - ${msg}`)
-            .join(", ");
-      }
-
-      throw new Error(errorMessage);
-    }
-
-    const newRecipe = await response.json();
+    const newRecipe = await Storage.create(recipeData);
     showSuccess("Recipe created successfully!");
     return newRecipe;
   } catch (error) {
@@ -243,20 +208,7 @@ async function createRecipe(recipeData) {
 
 async function updateRecipe(id, recipeData) {
   try {
-    const response = await fetch(`/api/recipes/${id}`, {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(recipeData)
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
-    }
-
-    const updatedRecipe = await response.json();
+    const updatedRecipe = await Storage.update(id, recipeData);
     showSuccess("Recipe updated successfully!");
     return updatedRecipe;
   } catch (error) {
@@ -268,14 +220,7 @@ async function updateRecipe(id, recipeData) {
 
 async function deleteRecipe(id) {
   try {
-    const response = await fetch(`/api/recipes/${id}`, {
-      method: "DELETE"
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-
+    await Storage.remove(id);
     showSuccess("Recipe deleted successfully!");
     return true;
   } catch (error) {
@@ -365,7 +310,7 @@ function bindEditDeleteButtons() {
   });
 }
 
-$(document).ready(function () {
+$(document).ready(async function () {
   // Add a loading indicator if it doesn't exist
   if ($("#loader").length === 0) {
     $("body").append(
@@ -392,6 +337,11 @@ $(document).ready(function () {
     .click(function (e) {
       e.stopPropagation();
     });
+
+  $("#onboard-next").on("click", function () { goToStep(onboardStep + 1); });
+  $("#onboard-back").on("click", function () { goToStep(onboardStep - 1); });
+  $("#onboard-finish").on("click", finishOnboarding);
+  $("#onboard-cancel").on("click", function () { $("#welcome").fadeOut(); });
 
   // Create new recipe
   $("#addb").click(async function () {
@@ -469,9 +419,229 @@ $(document).ready(function () {
     }
   });
 
+  $("#exportb").on("click", exportRecipes);
+  $("#loadb").on("click", function () { $("#loadfile").click(); });
+  $("#loadfile").on("change", loadRecipesFromFile);
+
+  $(document).on("keydown", function (e) {
+    if (e.key === "Escape" && $("#welcome").is(":visible") && Storage.hasChosenMode()) {
+      $("#welcome").fadeOut();
+    }
+  });
+
+  $("#storageb").on("click", async function () {
+    await renderStorageOptions();
+    const $local = $("input[name='storageMode'][value='" + Storage.getMode() + "']");
+    if ($local.length) $local.prop("checked", true);
+    goToStep(2);
+    $("#welcome").css({ opacity: 0, top: "-20px" }).show().animate({ opacity: 1, top: "0px" }, 200);
+  });
+
+  await renderStorageOptions();
+  if (!Storage.hasChosenMode()) {
+    goToStep(1);
+    $("#welcome").css({ opacity: 0, top: "-20px" }).show().animate({ opacity: 1, top: "0px" }, 200);
+  }
+
   // Fetch initial data
   fetchRecipes();
 });
+
+let onboardStep = 1;
+const ONBOARD_LAST = 3;
+
+function goToStep(step) {
+  if (step < 1 || step > ONBOARD_LAST) return;
+  onboardStep = step;
+  $(".onboard-step").each(function () {
+    this.hidden = Number($(this).data("step")) !== step;
+  });
+  if (step === ONBOARD_LAST) renderTransferStep();
+  // Cancel is only offered once setup has been completed before (i.e. opened via
+  // the Storage button); a first-time user must make a choice.
+  $("#onboard-cancel").prop("hidden", !Storage.hasChosenMode());
+  $("#onboard-back").prop("hidden", step === 1);
+  $("#onboard-next").prop("hidden", step === ONBOARD_LAST);
+  $("#onboard-finish").prop("hidden", step !== ONBOARD_LAST);
+}
+
+async function renderStorageOptions() {
+  const server = await Storage.probeServer();
+  const localN = await Storage.localCount();
+  const $opts = $("#storage-options");
+  $opts.data("serverCount", server.available ? server.count : 0);
+  $opts.data("localCount", localN);
+
+  let html =
+    '<label><input type="radio" name="storageMode" value="local" checked />' +
+    '<span><strong>This device</strong> — saved privately in your browser (IndexedDB)</span></label>';
+
+  if (server.available) {
+    html +=
+      '<label><input type="radio" name="storageMode" value="remote" />' +
+      '<span><strong>Local MongoDB</strong> — saved to a MongoDB database run by this app' +
+      (server.count > 0 ? ` (${server.count} recipe${server.count === 1 ? "" : "s"} found)` : "") +
+      "</span></label>";
+  } else {
+    html +=
+      '<label class="storage-disabled"><input type="radio" name="storageMode" value="remote" disabled />' +
+      '<span><strong>Local MongoDB</strong> — not detected. ' +
+      '<a href="https://github.com/shalomthegreat/recipe-db#-connecting-mongodb-simple-setup-guide" target="_blank" rel="noopener">How to set it up</a></span></label>';
+  }
+
+  $opts.html(html);
+}
+
+function renderTransferStep() {
+  const chosen = $("input[name='storageMode']:checked").val() || "local";
+  const mongoN = Number($("#storage-options").data("serverCount")) || 0;
+  const browserN = Number($("#storage-options").data("localCount")) || 0;
+  const $t = $("#onboard-transfer");
+
+  let html = "";
+  if (chosen === "local" && mongoN > 0) {
+    html =
+      `<p class="subtitle">You're keeping recipes in your browser.</p>` +
+      '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="none" checked />' +
+      "<span>Keep only what's already in your browser</span></label>" +
+      '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="copy" />' +
+      `<span>Copy the ${mongoN} recipe${mongoN === 1 ? "" : "s"} from the local MongoDB into your browser</span></label>` +
+      (browserN > 0
+        ? '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="sync" />' +
+          `<span>Sync — combine both so the ${mongoN} in MongoDB and ${browserN} in your browser match</span></label>`
+        : "");
+  } else if (chosen === "remote" && browserN > 0) {
+    html =
+      `<p class="subtitle">You're keeping recipes in the local MongoDB.</p>` +
+      '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="none" checked />' +
+      "<span>Keep only what's already in the local MongoDB</span></label>" +
+      '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="copy" />' +
+      `<span>Copy the ${browserN} recipe${browserN === 1 ? "" : "s"} from your browser into the local MongoDB</span></label>` +
+      (mongoN > 0
+        ? '<label class="onboard-transfer-opt"><input type="radio" name="transfer" value="sync" />' +
+          `<span>Sync — combine both so the ${browserN} in your browser and ${mongoN} in MongoDB match</span></label>`
+        : "");
+  } else {
+    html = `<p class="subtitle">Nothing to transfer — you're all set. Click "Got it!" to start.</p>`;
+  }
+  $t.html(html);
+}
+
+async function finishOnboarding() {
+  const chosen = $("input[name='storageMode']:checked").val() || "local";
+  const transfer = $("input[name='transfer']:checked").val() || "none";
+  Storage.setMode(chosen === "remote" ? "remote" : "local");
+
+  if (transfer === "sync") {
+    const result = await Storage.mergeBothWays();
+    if (result.serverFailed > 0) {
+      showSuccess(`Synced ${result.total} recipe${result.total === 1 ? "" : "s"} to your browser; ${result.serverFailed} could not be saved to the local MongoDB.`);
+    } else {
+      showSuccess(`Synced — ${result.total} recipe${result.total === 1 ? "" : "s"} now match in both your browser and the local MongoDB.`);
+    }
+  } else if (transfer === "copy" && chosen === "local") {
+    const copied = await Storage.migrateRemoteToLocal();
+    showSuccess(`Copied ${copied} recipe${copied === 1 ? "" : "s"} from the local MongoDB to your browser.`);
+  } else if (transfer === "copy" && chosen === "remote") {
+    const res = await Storage.migrateLocalToRemote();
+    if (res.failed > 0) {
+      showSuccess(`Copied ${res.copied} recipe${res.copied === 1 ? "" : "s"} to the local MongoDB; ${res.failed} could not be saved.`);
+    } else {
+      showSuccess(`Copied ${res.copied} recipe${res.copied === 1 ? "" : "s"} from your browser to the local MongoDB.`);
+    }
+  }
+
+  $("#welcome").fadeOut();
+  fetchRecipes(true);
+}
+
+async function exportRecipes() {
+  try {
+    const recipes = (await Storage.exportAll()).map(function (r) {
+      const clean = Object.assign({}, r);
+      delete clean._id;
+      return clean;
+    });
+    const json = JSON.stringify(recipes, null, 2);
+    const file = new File([json], "recipes.json", { type: "application/json" });
+
+    // On phones, use the native share sheet (AirDrop / Messages / Save to Files)
+    // when the browser can share a file; otherwise fall back to a download.
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      try {
+        await navigator.share({ files: [file], title: "My Recipes" });
+        return;
+      } catch (shareErr) {
+        if (shareErr && shareErr.name === "AbortError") return; // user dismissed the sheet
+        // otherwise fall through to the download path
+      }
+    }
+
+    const url = URL.createObjectURL(file);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "recipes.json";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    showSuccess(`Exported ${recipes.length} recipe${recipes.length === 1 ? "" : "s"}.`);
+  } catch (error) {
+    console.error("Error exporting recipes:", error);
+    showError("Failed to export recipes.");
+  }
+}
+
+async function loadRecipesFromFile(event) {
+  const file = event.target.files && event.target.files[0];
+  event.target.value = "";
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const parsed = JSON.parse(text);
+    const recipes = Array.isArray(parsed) ? parsed : [parsed];
+    const result = await Storage.importRecipes(recipes, askImportConflict);
+    const parts = [];
+    if (result.added) parts.push(`${result.added} added`);
+    if (result.updated) parts.push(`${result.updated} updated`);
+    if (result.skipped) parts.push(`${result.skipped} skipped`);
+    if (result.invalid) parts.push(`${result.invalid} not valid recipes`);
+    if (result.failed) parts.push(`${result.failed} could not be saved`);
+    showSuccess(`Import complete — ${parts.join(", ") || "nothing to import"}.`);
+    fetchRecipes(true);
+  } catch (error) {
+    console.error("Error loading recipes:", error);
+    showError("Couldn't load that file — make sure it's a recipes JSON export.");
+  }
+}
+
+function askImportConflict(incoming, existing) {
+  return new Promise(function (resolve) {
+    const modal = document.getElementById("import-conflict");
+    modal.querySelector(".conflict-message").textContent =
+      `"${incoming.title || "Untitled"}" already exists with different details. What should we do?`;
+    document.getElementById("conflict-applyall").checked = false;
+    $(modal).css({ opacity: 0, top: "-20px" }).show().animate({ opacity: 1, top: "0px" }, 200);
+
+    function choose(action) {
+      const applyAll = document.getElementById("conflict-applyall").checked;
+      cleanup();
+      $(modal).fadeOut();
+      resolve({ action: action, applyAll: applyAll });
+    }
+    function onUpdate() { choose("update"); }
+    function onAdd() { choose("add"); }
+    function onSkip() { choose("skip"); }
+    function cleanup() {
+      document.getElementById("conflict-update").removeEventListener("click", onUpdate);
+      document.getElementById("conflict-add").removeEventListener("click", onAdd);
+      document.getElementById("conflict-skip").removeEventListener("click", onSkip);
+    }
+    document.getElementById("conflict-update").addEventListener("click", onUpdate);
+    document.getElementById("conflict-add").addEventListener("click", onAdd);
+    document.getElementById("conflict-skip").addEventListener("click", onSkip);
+  });
+}
 
 // Function to bind row clicks for navigation to recipe detail page
 function bindRowClicks() {

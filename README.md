@@ -11,6 +11,7 @@ A beautiful, light-weight, self-hosted web application for organizing, sharing, 
 Whether you are looking to retire that grease-stained paper binder or build a private family portal that can be accessed anywhere, the **Family Recipe Box** is designed for the modern era:
 
 - **🏠 Self-Hosted:** Run it on your own server or local machine for complete privacy and access-control.
+- **💾 Flexible Storage:** Keep recipes in your browser (IndexedDB, no server needed) or in a local MongoDB — choose on first run, switch anytime, and copy or sync between the two. Export and import your collection as JSON to move it between devices.
 - **✍️ Intuitive Natural Language Schema:** Traditional databases force strict numeric units, causing errors for entries like "a pinch of salt" or "3 medium carrots". Our flexible string-based schema preserves original recipe notes, hand-written directions, and cultural measurements.
 - **🎨 Dynamic Theme Customization:** Switch between multiple hand-crafted themes (**Orange Warmth**, **Purple Amethyst**, and **Ocean Blue**) to suit your kitchen's aesthetic.
 - **⚡ Supercharged Search and Filters:** Powered by jQuery DataTables, you can search and filter through hundreds of recipes instantly by title, author, category, or tags.
@@ -111,13 +112,22 @@ Getting your database up and running takes less than 5 minutes. You can choose a
      MONGO_URI_RECIPES="mongodb+srv://recipeuser:securepassword123@cluster0..."
      ```
 
-### Option B: Local MongoDB (Offline/Docker)
-If you prefer keeping your family recipes completely offline on your local machine:
+### Option B: Local MongoDB (Offline)
+If you prefer keeping your family recipes completely offline on your local machine,
+you can run MongoDB natively or in Docker — either works. Docker is **not** required.
 
-**Prerequisites:** 
-- Docker installed on your system (download from [docker.com](https://docker.com))
+**Native install (no Docker):**
+```bash
+# macOS (Homebrew):
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb-community
 
-**Using Docker (Easiest):**
+# Linux / Windows: follow the official install guide:
+# https://www.mongodb.com/docs/manual/administration/install-community/
+```
+
+**Or, using Docker:**
 ```bash
 # This command starts a MongoDB container:
 # -d: Runs in detached mode (background)
@@ -199,11 +209,14 @@ Our recipe document uses the following structure:
     }
   ],
   "credit": "Original Family Recipe",            // Optional (String)
-  
+
+  "uid": "5f3b9c2a-...",                         // Automated (String) - stable cross-store id used to de-duplicate during sync/import
   "createdAt": "2026-06-23T21:51:00.000Z",       // Automated (ISO Date String)
   "updatedAt": "2026-06-23T21:51:00.000Z"        // Automated (ISO Date String)
 }
 ```
+
+> **Note on `uid`:** When recipes are stored in the browser (IndexedDB mode) or transferred between the browser and MongoDB, each recipe carries a stable `uid` so the same recipe is recognized across stores and devices. It is assigned automatically and is preserved by export/import.
 
 ## 📜 Open Source, Licensing & Attribution
 
