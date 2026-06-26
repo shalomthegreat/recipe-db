@@ -18,7 +18,11 @@ app.use("/api/recipes", recipeRoutes);
 async function startServer() {
   try {
     // Connect to MongoDB
-    await connectDB();
+    try {
+      await connectDB();
+    } catch (dbError) {
+      console.warn("MongoDB connection failed. Continuing server startup with local storage (IndexedDB) support only.");
+    }
 
     // Start Express server
     app.listen(port, () => {

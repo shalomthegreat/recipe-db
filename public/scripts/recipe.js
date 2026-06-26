@@ -196,12 +196,7 @@ async function saveRecipe(options = {}) {
   
   try {
     if (!isAuto) showLoader();
-    const response = await Storage.update(recipeId, recipeData);
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `HTTP error! Status: ${response.status}`);
-    }
+    await Storage.update(recipeId, recipeData);
 
     if (!isAuto) hideLoader();
     showSuccess(isAuto ? "Auto-saved" : "Recipe saved successfully!");
