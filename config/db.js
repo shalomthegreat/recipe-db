@@ -2,7 +2,7 @@ const { MongoClient } = require('mongodb');
 require('dotenv').config();
 
 const uri = process.env.MONGO_URI_RECIPES;
-const client = new MongoClient(uri);
+const client = uri ? new MongoClient(uri) : null;
 
 // Database and collection names
 const DB_NAME = 'myrecipes';
@@ -123,6 +123,10 @@ function reportConnectionError(error) {
  * @returns {Promise<Object>} MongoDB client connection
  */
 async function connectDB() {
+  if (!client) {
+    console.warn('MongoDB connection URI not found (MONGO_URI_RECIPES is not set). MongoDB support will be disabled, falling back to local storage (IndexedDB).');
+    return null;
+  }
   try {
     await client.connect();
     console.log('Connected to MongoDB');
@@ -138,6 +142,9 @@ async function connectDB() {
  * @returns {Object} MongoDB database instance
  */
 function getDB() {
+  if (!client) {
+    throw new Error('Database client not initialized (missing MONGO_URI_RECIPES)');
+  }
   return client.db(DB_NAME);
 }
 
@@ -145,6 +152,7 @@ function getDB() {
  * Close database connection
  */
 async function closeDB() {
+  if (!client) return;
   try {
     await client.close();
     console.log('MongoDB connection closed');
