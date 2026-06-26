@@ -83,6 +83,28 @@ function showConfirmDialog(message, onConfirm) {
   noBtn.addEventListener("click", onNo);
 }
 
+// Open a simple informational modal (one dismiss button, no confirm callback).
+// `modalId` is the element id; `closeId` is the dismiss button inside it.
+function showInfoModal(modalId, closeId) {
+  const container = document.getElementById(modalId);
+  if (!container) {
+    console.error("Info modal not found in DOM:", modalId);
+    return;
+  }
+
+  $(container).css({ opacity: 0, top: "-20px" }).show().animate({ opacity: 1, top: "0px" }, 200);
+
+  const closeBtn = container.querySelector("#" + closeId);
+  if (!closeBtn) return;
+
+  function onClose() {
+    $(container).fadeOut();
+    closeBtn.removeEventListener("click", onClose);
+  }
+
+  closeBtn.addEventListener("click", onClose);
+}
+
 window.testToast = {
   success: function (msg) {
     showSuccess(msg || "Test success notification");

@@ -544,6 +544,28 @@ h3.fdancing {
   }
 }
 
+/* Help modal — reuses the shared .modal / .modal-body styles; these just tune
+   the intro line, the closing tip, and the dismiss button alignment. */
+#help-modal .subtitle {
+  margin: 0.5rem 0 0;
+  color: var(--primary-dark, #333);
+}
+
+#help-modal .help-tip {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--primary-dark, #555);
+}
+
+#help-modal .confirm-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 1.5rem;
+}
+
 @media not print {
   #credits {
     font-size: small;

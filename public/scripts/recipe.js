@@ -7,12 +7,13 @@ function getRecipeIdFromUrl() {
   return urlParams.get('id');
 }
 
-// Fetch recipe data from API
+// Fetch recipe data from API. Resolves true when the recipe loaded, false
+// otherwise (no id / load error) so callers can react to a failed load.
 async function fetchRecipe(isInitial = false) {
   recipeId = getRecipeIdFromUrl();
   if (!recipeId) {
     showError("No recipe ID provided");
-    return;
+    return false;
   }
 
   try {
@@ -24,12 +25,14 @@ async function fetchRecipe(isInitial = false) {
     if (!isInitial) {
       hideLoader();
     }
+    return true;
   } catch (error) {
     console.error("Error fetching recipe:", error);
     showError("Failed to load recipe. Please try again later.");
     if (!isInitial) {
       hideLoader();
     }
+    return false;
   }
 }
 
@@ -290,6 +293,20 @@ function addNote() {
   $("#note").toggle();
 }
 
+// First-visit help: the editing-basics dialog auto-shows once per browser, and
+// the Help button reopens it on demand.
+const HELP_SEEN_KEY = "recipeHelpSeen";
+
+function openHelp() {
+  showInfoModal("help-modal", "help-close");
+}
+
+function maybeShowFirstVisitHelp() {
+  if (localStorage.getItem(HELP_SEEN_KEY) === "yes") return;
+  openHelp();
+  localStorage.setItem(HELP_SEEN_KEY, "yes");
+}
+
 // Initialize on document ready
 $(document).ready(function () {
   applySavedTheme();
@@ -315,11 +332,19 @@ $(document).ready(function () {
   $("#add-section").on("click", addSection);
   $("#noteb").on("click", addNote);
 
+  // Help: reopen on demand
+  $("#help").on("click", openHelp);
+
   // Coordinate loading: fetch recipe data and wait for fonts in parallel
   const recipePromise = fetchRecipe(true);
   const fontsPromise = document.fonts ? document.fonts.ready : Promise.resolve();
 
-  Promise.all([recipePromise, fontsPromise]).then(function () {
+  Promise.all([recipePromise, fontsPromise]).then(function (results) {
     hideLoader();
+    // Show the editing-basics dialog on first visit — but only once the recipe
+    // actually loaded, so it never pops over a load-error state.
+    if (results[0]) {
+      maybeShowFirstVisitHelp();
+    }
   });
 });
