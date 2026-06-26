@@ -150,15 +150,12 @@ function getCreditValue() {
   return value === $credits.attr("data-placeholder") ? "" : value;
 }
 
-// Save recipe changes
-async function saveRecipe(options = {}) {
-  const isAuto = options.auto === true;
-  if (!recipeId) {
-    showError("No recipe ID available");
-    return;
-  }
-  
-  // Collect all recipe data from the page
+// Snapshot of the field values as of the last successful save, used to send
+// only what actually changed on auto-save (PATCH) instead of the whole object.
+let lastSavedSnapshot = null;
+
+// Read every editable field off the page into a plain recipe object.
+function collectRecipeData() {
   const recipeData = {
     title: $("h3.fdancing").text().trim(),
     prep: $("#prep").text().trim(),
@@ -168,7 +165,7 @@ async function saveRecipe(options = {}) {
     author: $("#author").text().trim(),
     credit: getCreditValue()
   };
-  
+
   // Collect ingredients by section
   recipeData.ingredients = [];
   $("#items .mtitle").each(function(index) {
@@ -176,17 +173,17 @@ async function saveRecipe(options = {}) {
     const $set = $(this).next(".set");
     const itemsText = $set.find("textarea").val();
     const items = itemsText ? itemsText.split("\n").filter(item => item.trim() !== "") : [];
-    
+
     recipeData.ingredients.push({
       section: sectionName,
       items: items
     });
   });
-  
+
   // Collect instructions
   const instructionsText = $("#instructions").siblings("textarea").val();
   recipeData.steps = instructionsText ? instructionsText.split("\n").filter(step => step.trim() !== "") : [];
-  
+
   // Collect notes
   if ($("#note").is(":visible")) {
     const notesText = $("#note textarea").val();
@@ -194,10 +191,54 @@ async function saveRecipe(options = {}) {
   } else {
     recipeData.notes = [];
   }
-  
+
+  return recipeData;
+}
+
+// Return the subset of `current` whose fields differ from `previous`. Comparison
+// is by JSON value, which handles the array/object fields (ingredients, steps,
+// notes) as well as the scalar ones.
+function diffRecipeData(current, previous) {
+  const changed = {};
+  Object.keys(current).forEach(function (key) {
+    if (JSON.stringify(current[key]) !== JSON.stringify(previous[key])) {
+      changed[key] = current[key];
+    }
+  });
+  return changed;
+}
+
+// Save recipe changes
+async function saveRecipe(options = {}) {
+  const isAuto = options.auto === true;
+  if (!recipeId) {
+    showError("No recipe ID available");
+    return;
+  }
+
+  const recipeData = collectRecipeData();
+
+  // For auto-saves, send only the fields that changed since the last save via
+  // PATCH. The first auto-save (no snapshot yet) and every manual save send the
+  // full object. If nothing changed, there's nothing to do.
+  let payload = recipeData;
+  let usePatch = false;
+  if (isAuto && lastSavedSnapshot) {
+    payload = diffRecipeData(recipeData, lastSavedSnapshot);
+    if (Object.keys(payload).length === 0) return;
+    usePatch = true;
+  }
+
   try {
     if (!isAuto) showLoader();
-    await Storage.update(recipeId, recipeData);
+    if (usePatch) {
+      await Storage.patch(recipeId, payload);
+    } else {
+      await Storage.update(recipeId, payload);
+    }
+
+    // Record what's now persisted so the next auto-save diffs against it.
+    lastSavedSnapshot = recipeData;
 
     if (!isAuto) hideLoader();
     showSuccess(isAuto ? "Auto-saved" : "Recipe saved successfully!");
