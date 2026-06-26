@@ -551,6 +551,17 @@ h3.fdancing {
   color: var(--primary-dark, #333);
 }
 
+/* The recipe page's global `li` rule (50px left padding for the numbered
+   instruction steps, plus a relative position and big margin) bleeds into the
+   modal's tip list and breaks its icon/text alignment. Neutralize it so the
+   shared `.modal-body li` flex layout (icon centered next to text) is what
+   actually renders. */
+#help-modal .modal-body li {
+  padding-left: 0;
+  position: static;
+  margin-bottom: 1rem;
+}
+
 #help-modal .help-tip {
   display: flex;
   align-items: center;
@@ -564,6 +575,21 @@ h3.fdancing {
   display: flex;
   justify-content: flex-end;
   margin-top: 1.5rem;
+}
+
+/* Make the dismiss button identical to the "Got it!" on the index onboarding.
+   The recipe page sets a 10px root font-size and loads skeleton.css (uppercase,
+   letter-spacing, small fixed sizing) — neither of which the index has — so the
+   shared .primary-btn renders differently here. These are the index button's own
+   computed values, pinned in absolute units so the root-size difference can't
+   shrink them. */
+#help-close.primary-btn {
+  text-transform: none;
+  letter-spacing: normal;
+  font-size: 14px;
+  line-height: normal;
+  height: auto;
+  padding: 11px 19px;
 }
 
 @media not print {
