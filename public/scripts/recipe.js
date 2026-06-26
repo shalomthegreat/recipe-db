@@ -140,12 +140,7 @@ function applySavedAutoSave() {
 }
 
 function updateSaveButton() {
-  const $save = $("#save");
-  if (isAutoSaveOn()) {
-    $save.prop("disabled", true).addClass("autosaving").text("Autosaving");
-  } else {
-    $save.prop("disabled", false).removeClass("autosaving").text("Save");
-  }
+  $("#save").toggle(!isAutoSaveOn());
 }
 
 function autoSave() {
@@ -257,7 +252,7 @@ function initInlineEditing() {
       $(this).siblings(".field").show().focus();
       $(this).parent().children("button, .text").hide();
     })
-    .on("blur", "textarea", function () {
+    .on("blur", "textarea.field", function () {
       $(this).hide();
       const $text = $(this).prev(".text");
       if ($text.attr("id") === "credits" && $(this).val().trim() === "") {

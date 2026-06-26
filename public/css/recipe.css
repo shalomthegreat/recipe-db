@@ -57,11 +57,6 @@ button.primary {
   background: var(--primary-color);
   color: white;
 }
-button.primary:disabled,
-button.primary.autosaving {
-  opacity: 0.6;
-  cursor: default;
-}
 
 .autosave {
   display: inline-flex;
