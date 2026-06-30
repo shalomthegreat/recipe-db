@@ -3,7 +3,6 @@
   -webkit-print-color-adjust: exact;
   print-color-adjust: exact;
 }
-/* v2.0 */
 html {
   padding-top: 0;
 }
@@ -16,6 +15,9 @@ html {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   font-family: "Poppins", sans-serif;
 }
+#actions {
+  float: right;
+}
 a.back-btn {
   color: var(--primary-color);
   padding: 0.5rem 1rem;
@@ -26,9 +28,6 @@ a.back-btn {
   color: var(--primary-color);
 }
 a.back-btn:hover {background-color: #f0f0f0;
-}
-.fstandard {
-  font-family: "Raleway", sans-serif;
 }
 .fdancing {
   font-family: "Dancing Script", cursive;
@@ -52,10 +51,6 @@ body {
 }
 #items .text p, #items .set {
   margin-bottom: 10px;
-}
-button.primary {
-  background: var(--primary-color);
-  color: white;
 }
 
 .autosave {
@@ -107,17 +102,13 @@ button.primary {
 .autosave-label {
   color: var(--primary-dark);
 }
-hr {
-  margin: 2.5rem 0;
-  border-color: var(--primary-dark);
-}
 #instructions {
   list-style-type: none;
   counter-reset: item;
-  margin-bottom: 3rem;
+  margin-bottom: 1.875rem;
 }
-li {
-  margin-bottom: 2rem;
+#instructions li {
+  margin-bottom: 1.25rem;
   padding-left: 50px;
   position: relative;
   font-family: "Poppins", sans-serif;
@@ -215,9 +206,9 @@ textarea:focus {
   display: flex;
   justify-content: flex-end;
   align-items: center;
-  gap: 1.5rem;
-  margin-top: 3rem;
-  padding-top: 1.5rem;
+  gap: 1rem;
+  margin-top: 1.875rem;
+  padding-top: 1rem;
   border-top: 1px solid var(--primary-color);
   font-family: "Poppins", sans-serif;
   font-size: 0.85rem;
@@ -233,16 +224,6 @@ textarea:focus {
 #credit .meta-value {
   color: var(--primary-dark);
   font-weight: 500;
-}
-button {
-  border: 1px solid;
-  border-radius: 6px;
-  font-weight: 500;
-  transition: all 0.3s ease;
-}
-button:hover {
-  filter: brightness(1.1);
-  border-color: white;
 }
 .container.wiggle {
   animation: wiggle 0.5s ease-in-out 1;
@@ -260,30 +241,72 @@ button:hover {
   }
 }
 
-/* Modern overrides */
+/* Column Styles */
 .container {
+  position: relative;
+  width: 100%;
+  max-width: 960px;
   background: white;
   border-radius: 12px;
   padding: 1.25rem;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  margin-top: 1.5rem;
+  margin: 1.5rem auto 0;
+}
+.container .row.recipe-body {
+  margin: 40px 15px 0;
+}
+.column,
+.columns {
+  width: 100%;
+  float: left;
+  box-sizing: border-box;
+}
+.container::after,
+.row::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+@media (min-width: 550px) {
+  .column,
+  .columns {
+    margin-left: 4%;
+  }
+  .column:first-child,
+  .columns:first-child {
+    margin-left: 0;
+  }
+  .three.columns {
+    width: 22%;
+  }
+  .five.columns {
+    width: 39.3333333333%;
+  }
+  .seven.columns {
+    width: 56.6666666667%;
+  }
 }
 .meta-row {
   border-top: 1px solid var(--primary-dark);
   border-bottom: 1px solid var(--primary-dark);
-  padding: 2.5rem 0;
-  margin: 2.5rem 0;
+  padding: 1.5rem 0;
+  margin: 1.5rem 0;
 }
 h3.fdancing {
   color: var(--primary-color);
-  font-size: 2.6rem;
+  font-size: 1.8rem;
   display: inline;
   letter-spacing: normal;
 }
-.secondary,
-.secondary:hover {
-  color: var(--primary-dark);
-  border: 1px solid var(--primary-color);
+h5 {
+  color: var(--primary-color);
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+  padding-bottom: 0.35rem;
+  margin-bottom: 0.9rem;
+  font-family: "Poppins", sans-serif;
 }
 /* Tablet and up: roomier container + larger title */
 @media (min-width: 768px) {
@@ -292,10 +315,10 @@ h3.fdancing {
   }
   .container {
     padding: 2.5rem;
-    margin-top: 3rem;
+    margin-top: 2rem;
   }
   h3.fdancing {
-    font-size: 3rem;
+    font-size: 2.2rem;
   }
 }
 
@@ -303,7 +326,7 @@ h3.fdancing {
 @media (max-width: 767px) {
   /* Stack the Save/Print actions full-width instead of floating */
   #actions {
-    float: none !important;
+    float: none;
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
@@ -318,14 +341,14 @@ h3.fdancing {
     text-align: center;
   }
   /* Reduce the wide side margins on the ingredients/instructions row */
-  .container .row[style*="25px"] {
-    margin-left: 0 !important;
-    margin-right: 0 !important;
-    margin-top: 1.5rem !important;
+  .container .row.recipe-body {
+    margin-left: 0;
+    margin-right: 0;
+    margin-top: 1.5rem;
   }
-  li {
+  #instructions li {
     padding-left: 40px;
-    margin-bottom: 1.25rem;
+    margin-bottom: 0.8rem;
   }
   /* The floating edit-pencil indicator sits off the left edge and
      would cause horizontal scrolling on phones, so hide it. */
@@ -334,12 +357,11 @@ h3.fdancing {
   .edit.wide:hover::before {
     content: none;
   }
-  /* Stack the recipe credit/meta line */
   #credit {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
-    margin-top: 2rem;
+    margin-top: 1.25rem;
   }
 }
 
@@ -358,8 +380,7 @@ h3.fdancing {
     line-height: 1.55;
   }
 
-  /* Clean canvas — drop the on-screen card chrome.
-     padding-bottom reserves room for the fixed footer below. */
+  /* Clean canvas */
   .container {
     margin: 0 auto;
     padding: 0 0 3.5rem;
@@ -431,14 +452,6 @@ h3.fdancing {
 
   /* ---------- Section headings (Ingredients / Instructions) ---------- */
   h5 {
-    color: var(--primary-color);
-    font-size: 1.05rem;
-    font-weight: 600;
-    letter-spacing: 0.6px;
-    text-transform: uppercase;
-    padding-bottom: 0.35rem;
-    margin-bottom: 0.9rem;
-    /* border-bottom: 1px solid var(--primary-light); */
     /* Never let a section heading sit alone at the bottom of a page */
     break-after: avoid;
     page-break-after: avoid;
@@ -446,10 +459,6 @@ h3.fdancing {
     page-break-inside: avoid;
   }
 
-  /* Long recipes flow naturally across pages. We intentionally do NOT
-     lock the whole ingredients/instructions blocks together (that was
-     what bumped the "Ingredients"/"Instructions" headings to page 2).
-     Instead we just keep each individual line/step intact. */
   #items .set,
   #instructions li {
     break-inside: avoid;
@@ -519,8 +528,7 @@ h3.fdancing {
   }
 
   /* ---------- Credit / attribution line ---------- */
-  /* Pinned to the bottom of the page via position:fixed, with the
-     refined print text/color styling restored. */
+  /* Pinned to the bottom of the page via position:fixed */
   #credit {
     position: fixed;
     left: 0;
@@ -551,17 +559,6 @@ h3.fdancing {
   color: var(--primary-dark, #333);
 }
 
-/* The recipe page's global `li` rule (50px left padding for the numbered
-   instruction steps, plus a relative position and big margin) bleeds into the
-   modal's tip list and breaks its icon/text alignment. Neutralize it so the
-   shared `.modal-body li` flex layout (icon centered next to text) is what
-   actually renders. */
-#help-modal .modal-body li {
-  padding-left: 0;
-  position: static;
-  margin-bottom: 1rem;
-}
-
 #help-modal .help-tip {
   display: flex;
   align-items: center;
@@ -575,21 +572,6 @@ h3.fdancing {
   display: flex;
   justify-content: flex-end;
   margin-top: 1.5rem;
-}
-
-/* Make the dismiss button identical to the "Got it!" on the index onboarding.
-   The recipe page sets a 10px root font-size and loads skeleton.css (uppercase,
-   letter-spacing, small fixed sizing) — neither of which the index has — so the
-   shared .primary-btn renders differently here. These are the index button's own
-   computed values, pinned in absolute units so the root-size difference can't
-   shrink them. */
-#help-close.primary-btn {
-  text-transform: none;
-  letter-spacing: normal;
-  font-size: 14px;
-  line-height: normal;
-  height: auto;
-  padding: 11px 19px;
 }
 
 @media not print {

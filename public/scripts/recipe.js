@@ -302,7 +302,7 @@ function appendSection() {
     <div class="set">
       <div class="text"></div>
       <textarea class="field">1 tsp Salt</textarea>
-      <button class="secondary">ingredients</button>
+      <button class="secondary-btn">ingredients</button>
     </div>`);
 }
 
