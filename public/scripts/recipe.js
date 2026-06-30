@@ -61,7 +61,7 @@ function populateRecipeData(recipe) {
       $items.append(`<p class="mtitle edit">${sectionName}</p>`);
       
       // Add ingredients
-      const ingredientsHtml = items.join("<br>");
+      const ingredientsHtml = items.map(item => `<p>${item}</p>`).join("");
       $items.append(`
         <div class="set">
           <div class="text">${ingredientsHtml}</div>
@@ -74,7 +74,7 @@ function populateRecipeData(recipe) {
     $items.append(`
       <p class="mtitle edit">Dry</p>
       <div class="set">
-        <div class="text">2 cups all-purpose flour<br>1 cup granulated sugar<br>1 tbsp baking powder</div>
+        <div class="text"><p>2 cups all-purpose flour</p><p>1 cup granulated sugar</p><p>1 tbsp baking powder</p></div>
         <textarea class="field">2 cups all-purpose flour\n1 cup granulated sugar\n1 tbsp baking powder</textarea>
       </div>
     `);
@@ -107,7 +107,8 @@ function populateRecipeData(recipe) {
   // Set notes if they exist
   if (recipe.notes && recipe.notes.length > 0) {
     $("#note").show();
-    $("#note .text").html(recipe.notes.join("<br>"));
+    const notesHtml = recipe.notes.map(note => `<p>${note}</p>`).join("");
+    $("#note .text").html(notesHtml);
     $("#note textarea").val(recipe.notes.join("\n"));
   } else {
     $("#note").hide();
@@ -231,41 +232,58 @@ function applySavedTheme() {
 function initInlineEditing() {
   // Multi-line fields: click text to reveal its textarea, blur to re-render
   $(document)
-    .on("click", ".set button, .text", function () {
-      if (this.id === "credits" && $(this).hasClass("is-placeholder")) {
-        $(this).removeClass("is-placeholder").siblings(".field").val("");
+    .on("click", ".set .text, .set button", function () {
+      const $field = $(this).siblings(".field");
+      if ($(this).hasClass("is-placeholder")) {
+        $(this).removeClass("is-placeholder");
+        $field.val("");
       }
-      $(this).siblings(".field").show().focus();
-      $(this).parent().children("button, .text").hide();
+      $field.data("initial-val", $field.val());
+      $field.show().focus();
+      $(this).parent().children(".text, button").hide();
     })
-    .on("blur", "textarea.field", function () {
-      $(this).hide();
-      const $text = $(this).prev(".text");
-      if ($text.attr("id") === "credits" && $(this).val().trim() === "") {
-        $text.text($text.attr("data-placeholder")).addClass("is-placeholder").show();
-        autoSave();
+    .on("blur", ".set .field", function () {
+      const $field = $(this).hide();
+      const initialVal = $field.data("initial-val");
+      const currentVal = $field.val();
+      const hasChanged = initialVal !== currentVal;
+
+      const $text = $field.prev(".text");
+      const placeholder = $text.attr("data-placeholder");
+
+      if (placeholder && currentVal.trim() === "") {
+        $text.text(placeholder).addClass("is-placeholder").show();
+        if (hasChanged) {
+          autoSave();
+        }
         return;
       }
-      const lines = $(this).val().split("\n");
-      const isOL = $(this).siblings("ol").is(":hidden");
-      let html = "";
-      lines.forEach(function (line) {
-        html += isOL ? `<li>${line}</li>` : `<p>${line}</p>`;
-      });
-      $text.html(html).show();
-      autoSave();
-    });
 
-  // Single-line fields: click wraps content in a textarea, blur writes it back
-  $("body")
+      const tag = $text.is("ol") ? "li" : "p";
+      const html = currentVal
+        .split("\n")
+        .map(line => `<${tag}>${line}</${tag}>`)
+        .join("");
+
+      $text.html(html).show();
+      if (hasChanged) {
+        autoSave();
+      }
+    })
+    // Single-line fields: click wraps content in a textarea, blur writes it back
     .on("click", ".edit", function () {
       if ($(this).find("textarea").length < 1) {
-        $(this).wrapInner("<textarea/>").find("textarea").focus();
+        const $textarea = $(this).wrapInner("<textarea/>").find("textarea");
+        $textarea.data("initial-val", $textarea.val()).focus();
       }
     })
     .on("blur", ".edit textarea", function () {
-      $(this).parent().text(this.value);
-      autoSave();
+      const initialVal = $(this).data("initial-val");
+      const currentVal = this.value;
+      $(this).parent().text(currentVal);
+      if (initialVal !== currentVal) {
+        autoSave();
+      }
     });
 }
 
