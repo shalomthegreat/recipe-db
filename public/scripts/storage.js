@@ -128,6 +128,11 @@
         return tx("readwrite", function (s) { return s.put(record); }).then(function () { return record; });
       });
     },
+    // Partial update. Locally, update() already merges onto the existing record,
+    // so a partial payload behaves identically — patch is just the explicit alias.
+    patch: function (id, data) {
+      return local.update(id, data);
+    },
     // Backfill a uid without changing updatedAt (the record isn't really edited).
     setUid: function (id, uid) {
       return local.getById(id).then(function (existing) {
@@ -194,6 +199,16 @@
     update: async function (id, data) {
       const r = await apiJson("/api/recipes/" + id, {
         method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+      return r.json();
+    },
+    // Partial update — only the changed fields are sent. The server PATCH
+    // endpoint $sets exactly what it receives, leaving untouched fields alone.
+    patch: async function (id, data) {
+      const r = await apiJson("/api/recipes/" + id, {
+        method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data)
       });
@@ -475,6 +490,7 @@
     getById: function (id) { return backend().getById(id); },
     create: function (data) { return backend().create(data); },
     update: function (id, data) { return backend().update(id, data); },
+    patch: function (id, data) { return backend().patch(id, data); },
     remove: function (id) { return backend().remove(id); },
     migrateRemoteToLocal: migrateRemoteToLocal,
     migrateLocalToRemote: migrateLocalToRemote,
