@@ -55,7 +55,6 @@
       }
     </style>
 
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/skeleton/2.0.4/skeleton.css" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&family=Dancing+Script:wght@400;600;700&display=swap" />
@@ -83,18 +82,18 @@
 
     <nav class="recipe-nav">
       <a href="/" class="back-btn"><i class="fas fa-arrow-left"></i> Back to Recipes</a>
+      <button type="button" id="help" class="secondary-btn" title="How to edit this recipe"><i class="fas fa-question"></i> Help</button>
     </nav>
     <div class="container wiggle">
       <div class="row">
-        <span id="actions" style="float: right">
+        <span id="actions">
           <label id="autosave-toggle" class="autosave" title="Automatically save when you leave a field">
             <input type="checkbox" id="autosave" />
             <span class="autosave-track"><span class="autosave-thumb"></span></span>
             <span class="autosave-label">Auto-save</span>
           </label>
-          <button id="save" class="primary">Save</button>
-          <button type="button" id="print" class="secondary">Print</button>
-          <button type="button" id="help" class="secondary" title="How to edit this recipe"><i class="fas fa-question"></i> Help</button>
+          <button id="save" class="primary-btn">Save</button>
+          <button type="button" id="print" class="secondary-btn">Print</button>
         </span>
         <h3 class="fdancing edit">Recipe Title</h3>
       </div>
@@ -116,7 +115,7 @@
           <span id="yield" class="edit wide">1 Pie</span>
         </div>
       </div>
-      <div class="row" style="margin: 0 15px; margin-top: 40px">
+      <div class="row recipe-body">
         <div id="items" class="five columns">
           <h5>
             Ingredients
@@ -179,11 +178,11 @@
             </li>
             <li>
               <i class="fas fa-floppy-disk"></i>
-              <span>Click away from a field to apply your change, then press <strong>Save</strong> to keep it.</span>
+              <span>Click away from a field to apply your change. When you are done with all your edits, press <strong>Save</strong>.</span>
             </li>
             <li>
               <i class="fas fa-bolt"></i>
-              <span>Turn on <strong>Auto-save</strong> to save automatically every time you leave a field — no Save button needed.</span>
+              <span>Turn on <strong>Auto-save</strong> to save automatically every time you leave a field.</span>
             </li>
             <li>
               <i class="fas fa-plus"></i>
@@ -191,7 +190,7 @@
             </li>
             <li>
               <i class="fas fa-print"></i>
-              <span><strong>Print</strong> gives you a clean, printable copy of the finished recipe.</span>
+              <span><strong>Print</strong> gives you a clean, printable copy of the finished recipe. You can also save it as a PDF.</span>
             </li>
           </ul>
           <p class="help-tip"><i class="fas fa-circle-info"></i> You can reopen this any time with the <strong>Help</strong> button up top.</p>

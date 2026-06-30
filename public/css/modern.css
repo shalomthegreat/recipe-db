@@ -347,6 +347,7 @@ main {
   padding: 0.7rem 1.2rem;
   border-radius: 6px;
   cursor: pointer;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
   transition: background-color 0.2s;
 }
@@ -361,6 +362,7 @@ main {
   padding: 0.7rem 1.2rem;
   border-radius: 6px;
   cursor: pointer;
+  font-family: "Poppins", sans-serif;
   font-weight: 500;
 }
 .secondary-btn:hover {
