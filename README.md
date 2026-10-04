@@ -2,8 +2,10 @@
 
 A beautiful, light-weight, self-hosted web application for organizing, sharing, and preserving **your family's treasured recipes**. Built with a fast, modern `express.js` API and connected to `MongoDB`, this application combines developer-friendly simplicity with an elegant, responsive frontend interface.
 
-<img width="2252" height="1330" alt="main-page-example" src="https://github.com/user-attachments/assets/88d04dc5-b86b-42ce-b77c-40743ea40779" />
-<img width="2248" height="1486" alt="recipe-page-example" src="https://github.com/user-attachments/assets/f0ed6f13-ae39-47ea-9d02-3d2578a5c788" />
+
+<img width="2712" height="1276" alt="Screenshot 2026-10-03 at 5 47 26 PM" src="https://github.com/user-attachments/assets/bdd7c506-be53-4779-abbb-76e219f7df6a" />
+<img width="2706" height="1546" alt="Screenshot 2026-10-03 at 5 49 05 PM" src="https://github.com/user-attachments/assets/d294d2bc-c1ca-4c96-b5dd-d02af8a0c38a" />
+<!-- <img width="2248" height="1486" alt="recipe-page-example" src="https://github.com/user-attachments/assets/f0ed6f13-ae39-47ea-9d02-3d2578a5c788" /> -->
 
 
 ## ✨ Features
